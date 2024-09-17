@@ -13,7 +13,7 @@ namespace DiscTools.Inspection
         /// Runs through interrogation process to identify all discs
         /// </summary>
         public DetectedDiscType InterrogateALL()
-        {            
+        {
             ///////////////////////
             /* First ISO related */
             ///////////////////////
@@ -70,8 +70,6 @@ namespace DiscTools.Inspection
             }
 
 
-
-
             /////////////////////////////////////////////////////////
             /* Non-ISO Direct queries (where we can guess the LBA) */
             /////////////////////////////////////////////////////////
@@ -121,9 +119,6 @@ namespace DiscTools.Inspection
             // pcfx - no direct method yet
 
             // dreamcast - no direct method yet
-
-
-
 
 
             ///////////////////////////////////////
@@ -207,9 +202,6 @@ namespace DiscTools.Inspection
             }
 
 
-
-
-
             /////////////////////////////////
             /* Non-ISO 0-n LBA iterations  */
             /////////////////////////////////
@@ -224,7 +216,7 @@ namespace DiscTools.Inspection
                 /*
                 if (GetPSXData(dataStr))
                     return DiscSubType;
-                   
+
 
                 if (GetPSPData(dataStr))
                     return DetectedDiscType.SonyPSP;
@@ -277,10 +269,6 @@ namespace DiscTools.Inspection
                 if (Get3DOData(dataStr))
                     return DetectedDiscType.Panasonic3DO;
             }
-
-
-
-
 
 
             /////////////////////////////////////////
@@ -351,11 +339,8 @@ namespace DiscTools.Inspection
                     // 3DO
                     if (Get3DOData(dataStr))
                         return DetectedDiscType.Panasonic3DO;
-
                 }
             }
-
-
 
 
             ////////////////////////////////////////////////////////////////////

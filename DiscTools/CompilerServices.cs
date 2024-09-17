@@ -307,7 +307,7 @@ public static class MyExtensionMethods
     }
 
 
-    public unsafe static void SaveAsHexFast(this byte[] buffer, TextWriter writer)
+    public static unsafe void SaveAsHexFast(this byte[] buffer, TextWriter writer)
     {
         char* table = Util.HexConvPtr;
         if (buffer.Length > 0)

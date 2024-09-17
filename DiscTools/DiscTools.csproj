@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <LangVersion>latest</LangVersion>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <PackageId>DiscTools</PackageId>
+        <Authors>Asnivor</Authors>
+        <AssemblyName>DiscTools</AssemblyName>
+        <RootNamespace>DiscTools</RootNamespace>
+        <Copyright>Copyright © Asnivor 2017</Copyright>
+        <Company>Asnivor</Company>
+    </PropertyGroup>
+</Project>

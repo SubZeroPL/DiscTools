@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using DiscTools.Inspection;
 using DiscTools.ISO;
-using System.Linq;
-using System.IO;
 using DiscTools.Objects;
-using DiscTools.Inspection;
 
 namespace DiscTools
-{    
-    public partial class DiscInspector
+{
+    public class DiscInspector
     {
         public string CuePath { get; set; }
         public DiscData Data { get; set; }
@@ -18,36 +13,28 @@ namespace DiscTools
         public string DiscTypeString { get; set; }
         public string DiscViewString { get; set; }
 
-        //public ISOFile iso;
-
-        public DiscInspector()
-        {
-
-        }
-        
-
         /// <summary>
         /// Return a DiscInspector Object
         /// IntensiveScan will return more matches but may take longer
         /// </summary>
         /// <param name="cuePath"></param>
-        /// <param name="IntensiveScan"></param>
-        public static DiscInspector ScanDisc(string cuePath, bool IntensiveScan)
+        /// <param name="intensiveScan"></param>
+        public static DiscInspector ScanDisc(string cuePath, bool intensiveScan)
         {
-            var inter = new Interrogator(cuePath, IntensiveScan);
+            var inter = new Interrogator(cuePath, intensiveScan);
             var res = inter.Start();
 
             // run the cue routine
-            res = CueHandler.CueRoutine(res, cuePath, IntensiveScan);
+            res = CueHandler.CueRoutine(res, cuePath, intensiveScan);
 
-            return res;            
+            return res;
         }
 
         public static DiscInspector ScanDiscNoCorrection(string cuePath)
         {
             var inter = new Interrogator(cuePath, true);
             var res = inter.Start();
-            
+
             return res;
         }
 
@@ -63,7 +50,6 @@ namespace DiscTools
         /// Return a DiscInspector Object - quick scan that may miss detection on some non-iso based images
         /// </summary>
         /// <param name="cuePath"></param>
-        /// <param name="IntensiveScan"></param>
         public static DiscInspector ScanDiscQuick(string cuePath)
         {
             return ScanDisc(cuePath, false);
@@ -73,7 +59,6 @@ namespace DiscTools
         /// Return a DiscInspector Object - Intensive scan that has more chance of detection (but may take longer)
         /// </summary>
         /// <param name="cuePath"></param>
-        /// <param name="IntensiveScan"></param>
         public static DiscInspector ScanDisc(string cuePath)
         {
             return ScanDisc(cuePath, true);
@@ -292,5 +277,4 @@ namespace DiscTools
         SonyPS2,
         FMTowns
     }
-
 }

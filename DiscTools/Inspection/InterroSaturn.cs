@@ -30,21 +30,21 @@ namespace DiscTools.Inspection
 
         public bool GetSaturnData(string lbaString)
         {
-            if (!System.Text.Encoding.Default.GetString(currSector.ToList().Skip(16).Take(16).ToArray()).Trim().Contains("SEGA"))
+            if (!lbaString[..16].Trim().Contains("SEGASATURN"))
                 return false;
 
             // read the info
-            discI.Data.ManufacturerID = System.Text.Encoding.Default.GetString(currSector.ToList().Skip(16).Take(16).ToArray()).Trim();
+            discI.Data.ManufacturerID = lbaString.Substring(16, 16).Trim();
 
             /* These appear on the same 'line' but the offset appears to change. Will just try splitting by whitespace
             Data.SerialNumber = System.Text.Encoding.Default.GetString(d.ToList().Skip(32).Take(10).ToArray()).Trim();
             Data.Version = System.Text.Encoding.Default.GetString(d.ToList().Skip(42).Take(7).ToArray()).Trim();
             */
 
-            string serialAndVer = System.Text.Encoding.Default.GetString(currSector.ToList().Skip(32).Take(16).ToArray()).Trim();
+            var serialAndVer = System.Text.Encoding.Default.GetString(currSector.ToList().Skip(32).Take(16).ToArray()).Trim();
 
             // split by V
-            string[] arr1 = serialAndVer.Split('V');
+            var arr1 = serialAndVer.Split('V');
             discI.Data.SerialNumber = arr1[0].Trim();
             discI.Data.Version = ("V" + arr1[1]).Trim();
 
