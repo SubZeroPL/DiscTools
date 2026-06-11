@@ -147,9 +147,10 @@ namespace DiscTools.Inspection
                     }
 
                     // get other info
-                    string[] arr = lbaString.Split(new string[] { "\r\n" }, StringSplitOptions.None);
-                    string version = arr[1];
-                    string region = arr[2];
+                    var newline = lbaString.Contains("\r\n") ? "\r\n" : "\n";
+                    var arr = lbaString.Split([newline], StringSplitOptions.None);
+                    var version = arr[1];
+                    var region = arr[2];
 
                     discI.Data.Version = version.Replace("VER = ", "").Trim().TrimEnd('\0');
                     discI.Data.AreaCodes = region.Replace("VMODE = ", "").Trim().TrimEnd('\0');
