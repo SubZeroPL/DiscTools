@@ -101,7 +101,7 @@ namespace DiscTools.ISO.DiscFormats.CUE
             Array.Clear(job.DestBuffer2448, job.DestOffset, 2352);
 
             byte mode = 255;
-            int form = -1;
+            var form = -1;
             switch (TrackType)
             {
                 case CueTrackType.Audio:

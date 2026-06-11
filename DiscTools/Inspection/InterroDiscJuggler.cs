@@ -20,22 +20,22 @@ namespace DiscTools.Inspection
         public bool DiscJugIsDreamcast()
         {
             // load CDI stream
-            using (FileStream stream = File.Open(discI.CuePath, FileMode.Open))
+            using (var stream = File.Open(discI.CuePath, FileMode.Open))
             {
                 // try and detect dreamcast
-                long headerPos = GetDCHeaderOffset(stream);
+                var headerPos = GetDCHeaderOffset(stream);
                 stream.Seek(headerPos, SeekOrigin.Begin);
-                byte[] buffer = new byte[0x100];
-                byte[] detection = new byte[0x10];
+                var buffer = new byte[0x100];
+                var detection = new byte[0x10];
                 stream.Read(buffer, 0, buffer.Length);
                 Array.Copy(buffer, 0x0, detection, 0, detection.Length);
 
                 // buffer should now contain the header info
-                List<string> header = new List<string>();
+                var header = new List<string>();
 
-                for (int i = 0; i < 20; i++)
+                for (var i = 0; i < 20; i++)
                 {
-                    string lookup = System.Text.Encoding.Default.GetString(buffer.Skip(i * 16).Take(16).ToArray());
+                    var lookup = System.Text.Encoding.Default.GetString(buffer.Skip(i * 16).Take(16).ToArray());
                     header.Add(lookup);
                 }
 
@@ -63,21 +63,21 @@ namespace DiscTools.Inspection
 
         private static long GetDCHeaderOffset(Stream stream)
         {
-            byte[] header = new byte[] { 0x53, 0x45, 0x47, 0x41, 0x20, 0x53, 0x45, 0x47, 0x41, 0x4B, 0x41, 0x54, 0x41, 0x4E, 0x41 };
-            byte[] buffer = new byte[1024 * 1024]; //read a MiB at a time
+            var header = new byte[] { 0x53, 0x45, 0x47, 0x41, 0x20, 0x53, 0x45, 0x47, 0x41, 0x4B, 0x41, 0x54, 0x41, 0x4E, 0x41 };
+            var buffer = new byte[1024 * 1024]; //read a MiB at a time
 
 
-            for (int i = 1; i < stream.Length / 1024; i++)
+            for (var i = 1; i < stream.Length / 1024; i++)
             {
-                long streamPos = (stream.Length - (i * buffer.Length));
+                var streamPos = (stream.Length - (i * buffer.Length));
                 if (streamPos < 0) break;
                 stream.Position = streamPos;
                 stream.Read(buffer, 0, buffer.Length);
                 var index = IndexOfSequence(buffer, header, 0);
                 if (index.Count > 0)
                 {
-                    int bufferIndex = index[0];
-                    long streamIndex = streamPos + bufferIndex;
+                    var bufferIndex = index[0];
+                    var streamIndex = streamPos + bufferIndex;
                     return streamIndex;
                 }
             }
@@ -86,11 +86,11 @@ namespace DiscTools.Inspection
         //adapted from http://stackoverflow.com/posts/332667
         public static List<int> IndexOfSequence(byte[] buffer, byte[] pattern, int startIndex)
         {
-            List<int> positions = new List<int>();
-            int i = Array.IndexOf<byte>(buffer, pattern[0], startIndex);
+            var positions = new List<int>();
+            var i = Array.IndexOf<byte>(buffer, pattern[0], startIndex);
             while (i >= 0 && i <= buffer.Length - pattern.Length)
             {
-                byte[] segment = new byte[pattern.Length];
+                var segment = new byte[pattern.Length];
                 Buffer.BlockCopy(buffer, i, segment, 0, pattern.Length);
                 if (segment.SequenceEqual<byte>(pattern))
                     positions.Add(i);

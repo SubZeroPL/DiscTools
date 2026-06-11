@@ -18,7 +18,7 @@ namespace DiscTools.ISO.DiscFormats.Blobs
 
         public void WriteFile(string fname)
         {
-            using (FileStream fs = new FileStream(fname, FileMode.Create, FileAccess.Write, FileShare.Read))
+            using (var fs = new FileStream(fname, FileMode.Create, FileAccess.Write, FileShare.Read))
             {
                 WriteStream(fs);
             }
@@ -46,7 +46,7 @@ namespace DiscTools.ISO.DiscFormats.Blobs
 
         protected static void WriteTag(BinaryWriter bw, string tag)
         {
-            for (int i = 0; i < 4; i++)
+            for (var i = 0; i < 4; i++)
                 bw.Write(tag[i]);
             bw.Flush();
         }
@@ -79,7 +79,7 @@ namespace DiscTools.ISO.DiscFormats.Blobs
             public Stream Source;
             public override void WriteStream(Stream s)
             {
-                BinaryWriter bw = new BinaryWriter(s);
+                var bw = new BinaryWriter(s);
                 WriteTag(bw, tag);
                 bw.Write(Length);
                 bw.Flush();
@@ -100,8 +100,8 @@ namespace DiscTools.ISO.DiscFormats.Blobs
 
             public byte[] ReadAll()
             {
-                int msSize = (int)Math.Min((long)int.MaxValue, Length);
-                MemoryStream ms = new MemoryStream(msSize);
+                var msSize = (int)Math.Min((long)int.MaxValue, Length);
+                var ms = new MemoryStream(msSize);
                 Source.Position = Position;
                 Util.CopyStream(Source, ms, Length);
                 return ms.ToArray();
@@ -142,7 +142,7 @@ namespace DiscTools.ISO.DiscFormats.Blobs
             public RiffSubchunk_fmt(RiffSubchunk origin)
             {
                 tag = "fmt ";
-                BinaryReader br = new BinaryReader(new MemoryStream(origin.ReadAll()));
+                var br = new BinaryReader(new MemoryStream(origin.ReadAll()));
                 format_tag = (FORMAT_TAG)br.ReadUInt16();
                 channels = br.ReadUInt16();
                 samplesPerSec = br.ReadUInt32();
@@ -157,8 +157,8 @@ namespace DiscTools.ISO.DiscFormats.Blobs
             }
             void Flush()
             {
-                MemoryStream ms = new MemoryStream();
-                BinaryWriter bw = new BinaryWriter(ms);
+                var ms = new MemoryStream();
+                var bw = new BinaryWriter(ms);
                 bw.Write((ushort)format_tag);
                 bw.Write(channels);
                 bw.Write(samplesPerSec);
@@ -182,11 +182,11 @@ namespace DiscTools.ISO.DiscFormats.Blobs
         {
             public RiffChunk GetSubchunk(string tag, string type)
             {
-                foreach (RiffChunk rc in subchunks)
+                foreach (var rc in subchunks)
                     if (rc.tag == tag)
                     {
                         if (type == null) return rc;
-                        RiffContainer cont = rc as RiffContainer;
+                        var cont = rc as RiffContainer;
                         if (cont != null && cont.type == type)
                             return rc;
                     }
@@ -201,14 +201,14 @@ namespace DiscTools.ISO.DiscFormats.Blobs
             public List<RiffChunk> subchunks = new List<RiffChunk>();
             public override void WriteStream(Stream s)
             {
-                BinaryWriter bw = new BinaryWriter(s);
+                var bw = new BinaryWriter(s);
                 WriteTag(bw, tag);
-                long size = GetVolume();
+                var size = GetVolume();
                 if (size > uint.MaxValue) throw new FormatException("File too big to write out");
                 bw.Write((uint)size);
                 WriteTag(bw, type);
                 bw.Flush();
-                foreach (RiffChunk rc in subchunks)
+                foreach (var rc in subchunks)
                     rc.WriteStream(s);
                 if (size % 2 != 0)
                     s.WriteByte(0);
@@ -216,7 +216,7 @@ namespace DiscTools.ISO.DiscFormats.Blobs
             public override long GetVolume()
             {
                 long len = 4;
-                foreach (RiffChunk rc in subchunks)
+                foreach (var rc in subchunks)
                     len += rc.GetVolume() + 8;
                 return len;
             }
@@ -239,9 +239,9 @@ namespace DiscTools.ISO.DiscFormats.Blobs
             {
                 subchunks = rc.subchunks;
                 type = "INFO";
-                foreach (RiffChunk chunk in subchunks)
+                foreach (var chunk in subchunks)
                 {
-                    RiffSubchunk rsc = chunk as RiffSubchunk;
+                    var rsc = chunk as RiffSubchunk;
                     if (chunk == null)
                         throw new FormatException("Invalid subchunk of INFO list");
                     dictionary[rsc.tag] = System.Text.Encoding.ASCII.GetString(rsc.ReadAll());
@@ -251,9 +251,9 @@ namespace DiscTools.ISO.DiscFormats.Blobs
             private void Flush()
             {
                 subchunks.Clear();
-                foreach (KeyValuePair<string, string> kvp in dictionary)
+                foreach (var kvp in dictionary)
                 {
-                    RiffSubchunk rs = new RiffSubchunk
+                    var rs = new RiffSubchunk
                     {
                         tag = kvp.Key,
                         Source = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(kvp.Value)),
@@ -283,27 +283,27 @@ namespace DiscTools.ISO.DiscFormats.Blobs
         private RiffChunk ReadChunk(BinaryReader br)
         {
             RiffChunk ret;
-            string tag = ReadTag(br); readCounter += 4;
-            uint size = br.ReadUInt32(); readCounter += 4;
+            var tag = ReadTag(br); readCounter += 4;
+            var size = br.ReadUInt32(); readCounter += 4;
             if (size > int.MaxValue)
                 throw new FormatException("chunk too big");
             if (tag == "RIFF" || tag == "LIST")
             {
-                RiffContainer rc = new RiffContainer
+                var rc = new RiffContainer
                 {
                     tag = tag,
                     type = ReadTag(br)
                 };
 
                 readCounter += 4;
-                long readEnd = readCounter - 4 + size;
+                var readEnd = readCounter - 4 + size;
                 while (readEnd > readCounter)
                     rc.subchunks.Add(ReadChunk(br));
                 ret = rc.Morph();
             }
             else
             {
-                RiffSubchunk rsc = new RiffSubchunk
+                var rsc = new RiffSubchunk
                 {
                     tag = tag,
                     Source = br.BaseStream,
@@ -336,8 +336,8 @@ namespace DiscTools.ISO.DiscFormats.Blobs
             Dispose();
             BaseStream = s;
             readCounter = 0;
-            BinaryReader br = new BinaryReader(s);
-            RiffChunk chunk = ReadChunk(br);
+            var br = new BinaryReader(s);
+            var chunk = ReadChunk(br);
             if (chunk.tag != "RIFF") throw new FormatException("can't recognize riff chunk");
             riff = (RiffContainer)chunk;
         }

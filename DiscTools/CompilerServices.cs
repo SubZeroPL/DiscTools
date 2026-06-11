@@ -48,7 +48,7 @@ public static class MyExtensionMethods
 
     public static string ReadStringUtf8NullTerminated(this BinaryReader br)
     {
-        MemoryStream ms = new MemoryStream();
+        var ms = new MemoryStream();
         for (;;)
         {
             var b = br.ReadByte();
@@ -60,8 +60,8 @@ public static class MyExtensionMethods
 
     public static void CopyTo(this Stream src, Stream dest)
     {
-        int size = (src.CanSeek) ? Math.Min((int)(src.Length - src.Position), 0x2000) : 0x2000;
-        byte[] buffer = new byte[size];
+        var size = (src.CanSeek) ? Math.Min((int)(src.Length - src.Position), 0x2000) : 0x2000;
+        var buffer = new byte[size];
         int n;
         do
         {
@@ -79,8 +79,8 @@ public static class MyExtensionMethods
     {
         if (src.CanSeek)
         {
-            int pos = (int)dest.Position;
-            int length = (int)(src.Length - src.Position) + pos;
+            var pos = (int)dest.Position;
+            var length = (int)(src.Length - src.Position) + pos;
             dest.SetLength(length);
 
             while (pos < length)
@@ -96,7 +96,7 @@ public static class MyExtensionMethods
 
     public static void Write(this BinaryWriter bw, int[] buffer)
     {
-        foreach (int b in buffer)
+        foreach (var b in buffer)
         {
             bw.Write(b);
         }
@@ -104,7 +104,7 @@ public static class MyExtensionMethods
 
     public static void Write(this BinaryWriter bw, uint[] buffer)
     {
-        foreach (uint b in buffer)
+        foreach (var b in buffer)
         {
             bw.Write(b);
         }
@@ -112,7 +112,7 @@ public static class MyExtensionMethods
 
     public static void Write(this BinaryWriter bw, short[] buffer)
     {
-        foreach (short b in buffer)
+        foreach (var b in buffer)
         {
             bw.Write(b);
         }
@@ -120,7 +120,7 @@ public static class MyExtensionMethods
 
     public static void Write(this BinaryWriter bw, ushort[] buffer)
     {
-        foreach (ushort t in buffer)
+        foreach (var t in buffer)
         {
             bw.Write(t);
         }
@@ -128,8 +128,8 @@ public static class MyExtensionMethods
 
     public static int[] ReadInt32s(this BinaryReader br, int num)
     {
-        int[] ret = new int[num];
-        for (int i = 0; i < num; i++)
+        var ret = new int[num];
+        for (var i = 0; i < num; i++)
         {
             ret[i] = br.ReadInt32();
         }
@@ -139,8 +139,8 @@ public static class MyExtensionMethods
 
     public static short[] ReadInt16s(this BinaryReader br, int num)
     {
-        short[] ret = new short[num];
-        for (int i = 0; i < num; i++)
+        var ret = new short[num];
+        for (var i = 0; i < num; i++)
         {
             ret[i] = br.ReadInt16();
         }
@@ -150,8 +150,8 @@ public static class MyExtensionMethods
 
     public static ushort[] ReadUInt16s(this BinaryReader br, int num)
     {
-        ushort[] ret = new ushort[num];
-        for (int i = 0; i < num; i++)
+        var ret = new ushort[num];
+        for (var i = 0; i < num; i++)
         {
             ret[i] = br.ReadUInt16();
         }
@@ -309,12 +309,12 @@ public static class MyExtensionMethods
 
     public static unsafe void SaveAsHexFast(this byte[] buffer, TextWriter writer)
     {
-        char* table = Util.HexConvPtr;
+        var table = Util.HexConvPtr;
         if (buffer.Length > 0)
         {
-            int len = buffer.Length;
+            var len = buffer.Length;
             fixed (byte* src = &buffer[0])
-                for (int i = 0; i < len; i++)
+                for (var i = 0; i < len; i++)
                 {
                     writer.Write(table[src[i] >> 4]);
                     writer.Write(table[src[i] & 15]);
@@ -325,7 +325,7 @@ public static class MyExtensionMethods
 
     public static void SaveAsHex(this byte[] buffer, TextWriter writer, int length)
     {
-        for (int i = 0; i < length; i++)
+        for (var i = 0; i < length; i++)
         {
             writer.Write("{0:X2}", buffer[i]);
         }
@@ -352,7 +352,7 @@ public static class MyExtensionMethods
 
     public static void SaveAsHex(this int[] buffer, TextWriter writer)
     {
-        foreach (int b in buffer)
+        foreach (var b in buffer)
         {
             writer.Write("{0:X8}", b);
         }
@@ -375,7 +375,7 @@ public static class MyExtensionMethods
             throw new Exception("Hex value string does not appear to be properly formatted.");
         }
 
-        for (int i = 0; i < buffer.Length && i * 2 < hex.Length; i++)
+        for (var i = 0; i < buffer.Length && i * 2 < hex.Length; i++)
         {
             var bytehex = "" + hex[i * 2] + hex[i * 2 + 1];
             buffer[i] = byte.Parse(bytehex, NumberStyles.HexNumber);
@@ -389,12 +389,12 @@ public static class MyExtensionMethods
             throw new Exception("Data size mismatch");
         }
 
-        int count = buffer.Length;
+        var count = buffer.Length;
         fixed (byte* _dst = buffer)
         fixed (char* _src = hex)
         {
-            byte* dst = _dst;
-            char* src = _src;
+            var dst = _dst;
+            var src = _src;
             while (count > 0)
             {
                 // in my tests, replacing Hex2Int() with a 256 entry LUT slowed things down slightly
@@ -411,7 +411,7 @@ public static class MyExtensionMethods
             throw new Exception("Hex value string does not appear to be properly formatted.");
         }
 
-        for (int i = 0; i < buffer.Length && i * 4 < hex.Length; i++)
+        for (var i = 0; i < buffer.Length && i * 4 < hex.Length; i++)
         {
             var shorthex = "" + hex[i * 4] + hex[(i * 4) + 1] + hex[(i * 4) + 2] + hex[(i * 4) + 3];
             buffer[i] = short.Parse(shorthex, NumberStyles.HexNumber);
@@ -425,7 +425,7 @@ public static class MyExtensionMethods
             throw new Exception("Hex value string does not appear to be properly formatted.");
         }
 
-        for (int i = 0; i < buffer.Length && i * 4 < hex.Length; i++)
+        for (var i = 0; i < buffer.Length && i * 4 < hex.Length; i++)
         {
             var ushorthex = "" + hex[i * 4] + hex[(i * 4) + 1] + hex[(i * 4) + 2] + hex[(i * 4) + 3];
             buffer[i] = ushort.Parse(ushorthex, NumberStyles.HexNumber);
@@ -439,7 +439,7 @@ public static class MyExtensionMethods
             throw new Exception("Hex value string does not appear to be properly formatted.");
         }
 
-        for (int i = 0; i < buffer.Length && i * 8 < hex.Length; i++)
+        for (var i = 0; i < buffer.Length && i * 8 < hex.Length; i++)
         {
             //string inthex = "" + hex[i * 8] + hex[(i * 8) + 1] + hex[(i * 4) + 2] + hex[(i * 4) + 3] + hex[(i*4
             var inthex = hex.Substring(i * 8, 8);
@@ -464,7 +464,7 @@ public static class MyExtensionMethods
     public static bool FindBytes(this byte[] array, byte[] pattern)
     {
         var fidx = 0;
-        int result = Array.FindIndex(array, 0, array.Length, (byte b) =>
+        var result = Array.FindIndex(array, 0, array.Length, (byte b) =>
         {
             fidx = (b == pattern[fidx]) ? fidx + 1 : 0;
             return (fidx == pattern.Length);
@@ -520,16 +520,16 @@ public static class MyExtensionMethods
 
     public static int LowerBoundBinarySearch<T, TKey>(this IList<T> list, Func<T, TKey> keySelector, TKey key) where TKey : IComparable<TKey>
     {
-        int min = 0;
-        int max = list.Count;
+        var min = 0;
+        var max = list.Count;
         int mid;
         TKey midKey;
         while (min < max)
         {
             mid = (max + min) / 2;
-            T midItem = list[mid];
+            var midItem = list[mid];
             midKey = keySelector(midItem);
-            int comp = midKey.CompareTo(key);
+            var comp = midKey.CompareTo(key);
             if (comp < 0)
             {
                 min = mid + 1;
@@ -577,14 +577,14 @@ public static class MyExtensionMethods
     public static T BinarySearch<T, TKey>(this IList<T> list, Func<T, TKey> keySelector, TKey key)
     where TKey : IComparable<TKey>
     {
-        int min = 0;
-        int max = list.Count;
+        var min = 0;
+        var max = list.Count;
         while (min < max)
         {
-            int mid = (max + min) / 2;
-            T midItem = list[mid];
-            TKey midKey = keySelector(midItem);
-            int comp = midKey.CompareTo(key);
+            var mid = (max + min) / 2;
+            var midItem = list[mid];
+            var midKey = keySelector(midItem);
+            var comp = midKey.CompareTo(key);
             if (comp < 0)
             {
                 min = mid + 1;
@@ -610,7 +610,7 @@ public static class MyExtensionMethods
     public static byte[] ToByteArray(this IEnumerable<bool> list)
     {
         var bits = new BitArray(list.ToArray());
-        byte[] bytes = new byte[bits.Length / 8 + (bits.Length % 8 == 0 ? 0 : 1)];
+        var bytes = new byte[bits.Length / 8 + (bits.Length % 8 == 0 ? 0 : 1)];
         bits.CopyTo(bytes, 0);
         return bytes;
     }

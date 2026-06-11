@@ -18,7 +18,7 @@ namespace DiscTools.Inspection
         {
             currSector = di.ReadData(CurrentLBA, 2048);
 
-            string sS = System.Text.Encoding.Default.GetString(currSector);
+            var sS = System.Text.Encoding.Default.GetString(currSector);
 
             return GetPCFXData(sS);
         }
@@ -27,7 +27,7 @@ namespace DiscTools.Inspection
         {
             if (lbaString.ToLower().Contains("pc-fx"))
             {
-                byte[] newData = System.Text.Encoding.ASCII.GetBytes(lbaString);
+                var newData = System.Text.Encoding.ASCII.GetBytes(lbaString);
 
                 if (lbaString.ToLower().StartsWith("pc-fx:hu_cd"))
                 {
@@ -36,8 +36,8 @@ namespace DiscTools.Inspection
                 else
                 {
                     // game title should exist
-                    byte[] dataSm = newData.Skip(106).Take(48).ToArray();
-                    string t = System.Text.Encoding.Default.GetString(dataSm).Replace('\0', ' ').Trim().Split(new string[] { "  " }, StringSplitOptions.None).FirstOrDefault();
+                    var dataSm = newData.Skip(106).Take(48).ToArray();
+                    var t = System.Text.Encoding.Default.GetString(dataSm).Replace('\0', ' ').Trim().Split(new string[] { "  " }, StringSplitOptions.None).FirstOrDefault();
                     discI.Data.GameTitle = t;
                 }
 

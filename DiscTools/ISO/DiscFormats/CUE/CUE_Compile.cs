@@ -247,7 +247,7 @@ namespace DiscTools.ISO.DiscFormats.CUE
             //determine the CueFileInfo's type, based on extension and extra checking
             //TODO - once we reorganize the file ID stuff, do legit checks here (this is completely redundant with the fileID system
             //TODO - decode vs stream vs unpossible policies in input policies object (including ffmpeg availability-checking callback (results can be cached))
-            string blobPathExt = Path.GetExtension(choice).ToUpperInvariant();
+            var blobPathExt = Path.GetExtension(choice).ToUpperInvariant();
             if (blobPathExt == ".BIN" || blobPathExt == ".IMG") cfi.Type = CompiledCueFileType.BIN;
             else if (blobPathExt == ".ISO") cfi.Type = CompiledCueFileType.BIN;
             else if (blobPathExt == ".WAV")
@@ -314,7 +314,7 @@ namespace DiscTools.ISO.DiscFormats.CUE
             //we could check the format of the wav file here, though
 
             //score the cost of loading the file
-            bool needsCodec = false;
+            var needsCodec = false;
             OUT_LoadTime = 0;
             foreach (var cfi in OUT_CompiledCueFiles)
             {
@@ -334,7 +334,7 @@ namespace DiscTools.ISO.DiscFormats.CUE
             //check whether processing was available
             if (needsCodec)
             {
-                FFMpeg ffmpeg = new FFMpeg();
+                var ffmpeg = new FFMpeg();
                 if (!ffmpeg.QueryServiceAvailable())
                     Warn("Decoding service will be required for further processing, but is not available");
             }
@@ -434,7 +434,7 @@ namespace DiscTools.ISO.DiscFormats.CUE
             //global cd text will acquire the cdtext commands set before track commands
             curr_cdtext = OUT_GlobalCDText;
 
-            for (int i = 0; i < cue.Commands.Count; i++)
+            for (var i = 0; i < cue.Commands.Count; i++)
             {
                 var cmd = cue.Commands[i];
 

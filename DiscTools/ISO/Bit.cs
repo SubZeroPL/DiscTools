@@ -83,9 +83,9 @@ namespace DiscTools.ISO
             return _val.GetHashCode();
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            return this == (Bit)obj;  // this is probably wrong
+            return this == (Bit)obj!;  // this is probably wrong
         }
     }
 }

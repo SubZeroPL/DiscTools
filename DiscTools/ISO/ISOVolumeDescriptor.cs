@@ -195,10 +195,10 @@ namespace DiscTools.ISO
         /// <param name="s">The stream to parse from.</param>
         public bool Parse(Stream s)
         {
-            EndianBitConverter bc = EndianBitConverter.CreateForLittleEndian();
-            EndianBitConverter bcBig = EndianBitConverter.CreateForBigEndian();
-            long startPosition = s.Position;
-            byte[] buffer = new byte[ISOFile.SECTOR_SIZE];
+            var bc = EndianBitConverter.CreateForLittleEndian();
+            var bcBig = EndianBitConverter.CreateForBigEndian();
+            var startPosition = s.Position;
+            var buffer = new byte[ISOFile.SECTOR_SIZE];
 
             // Read the entire structure
             s.Read(buffer, 0, ISOFile.SECTOR_SIZE);
@@ -220,7 +220,7 @@ namespace DiscTools.ISO
             // Handle the primary volume information
             if (this.Type == 1)
             {
-                int cursor = 8;
+                var cursor = 8;
                 // Get the system identifier 
                 Array.Copy(buffer, cursor,
                     this.SystemIdentifier, 0, LENGTH_SHORT_IDENTIFIER);

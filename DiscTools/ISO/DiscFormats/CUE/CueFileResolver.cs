@@ -45,7 +45,7 @@ namespace DiscTools.ISO.DiscFormats.CUE
         {
             IsHardcodedResolve = true;
             fisBaseDir = new MyFileInfo[hardcodes.Count];
-            int i = 0;
+            var i = 0;
             foreach (var kvp in hardcodes)
             {
                 fisBaseDir[i++] = new MyFileInfo { FullName = kvp.Key, FileInfo = new FileInfo(kvp.Value) };
@@ -55,7 +55,7 @@ namespace DiscTools.ISO.DiscFormats.CUE
         MyFileInfo[] MyFileInfosFromFileInfos(FileInfo[] fis)
         {
             var myfis = new MyFileInfo[fis.Length];
-            for (int i = 0; i < fis.Length; i++)
+            for (var i = 0; i < fis.Length; i++)
             {
                 myfis[i].FileInfo = fis[i];
                 myfis[i].FullName = fis[i].FullName;
@@ -72,8 +72,8 @@ namespace DiscTools.ISO.DiscFormats.CUE
         /// </summary>
         public List<string> Resolve(string path)
         {
-            string targetFile = Path.GetFileName(path);
-            string targetFragment = Path.GetFileNameWithoutExtension(path);
+            var targetFile = Path.GetFileName(path);
+            var targetFragment = Path.GetFileNameWithoutExtension(path);
 
             DirectoryInfo di = null;
             MyFileInfo[] fileInfos;
@@ -117,9 +117,9 @@ namespace DiscTools.ISO.DiscFormats.CUE
                 if (ext == ".7z" || ext == ".rar" || ext == ".zip" || ext == ".bz2" || ext == ".gz")
                     continue;
 
-                string fragment = Path.GetFileNameWithoutExtension(fi.FullName);
+                var fragment = Path.GetFileNameWithoutExtension(fi.FullName);
                 //match files with differing extensions
-                int cmp = string.Compare(fragment, targetFragment, !caseSensitive);
+                var cmp = string.Compare(fragment, targetFragment, !caseSensitive);
                 if (cmp != 0)
                     //match files with another extension added on (likely to be mygame.bin.ecm)
                     cmp = string.Compare(fragment, targetFile, !caseSensitive);

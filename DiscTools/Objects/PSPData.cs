@@ -142,7 +142,7 @@ namespace DiscTools.Objects
 
         public static void ParsePSPData(DiscInspector di, SFO sfo)
         {
-            PSPData data = new PSPData();
+            var data = new PSPData();
 
             foreach (var p in sfo.Parameters)
             {
@@ -195,15 +195,15 @@ namespace DiscTools.Objects
             if (discId.Contains("-"))
                 return discId;
 
-            string result = "";
-            int len = discId.Length;
-            bool demarkFound = false;
-            for (int i = 0; i < len; i++)
+            var result = "";
+            var len = discId.Length;
+            var demarkFound = false;
+            for (var i = 0; i < len; i++)
             {
                 if (!demarkFound)
                 {
                     int n;
-                    bool isNumeric = int.TryParse(discId[i].ToString(), out n);
+                    var isNumeric = int.TryParse(discId[i].ToString(), out n);
                     if (isNumeric)
                     {
                         demarkFound = true;

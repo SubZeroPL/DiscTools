@@ -18,7 +18,7 @@ namespace DiscTools.ISO.Internal.Jobs
         public void Run()
         {
             var job = this;
-            DiscTOC ret = new DiscTOC();
+            var ret = new DiscTOC();
 
             //this is a dummy, for convenience in array indexing, so that track 1 is at array index 1
             ret.TOCItems[0].LBA = 0; //arguably could be -150, but let's not just yet
@@ -29,7 +29,7 @@ namespace DiscTools.ISO.Internal.Jobs
             ret.FirstRecordedTrackNumber = 0;
             ret.LastRecordedTrackNumber = 0;
 
-            int maxFoundTrack = 0;
+            var maxFoundTrack = 0;
 
             foreach (var te in job.Entries)
             {

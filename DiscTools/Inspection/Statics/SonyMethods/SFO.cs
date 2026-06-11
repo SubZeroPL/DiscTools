@@ -64,10 +64,10 @@ namespace DiscTools.Inspection.Statics.SonyMethods
             IndexEntriesCount = ReadIntValue(0x10, 0x04);
 
             /* parse index table */
-            for (int i = 0; i < IndexEntriesCount; i++)
+            for (var i = 0; i < IndexEntriesCount; i++)
             {
-                SFOIndexTable ind = new SFOIndexTable();
-                int startOffset = i * 0x10;
+                var ind = new SFOIndexTable();
+                var startOffset = i * 0x10;
 
                 // offsets
                 ind.KeyOffset = ReadInt16Value(0x14 + startOffset, 0x02);
@@ -84,7 +84,7 @@ namespace DiscTools.Inspection.Statics.SonyMethods
             /* get actual params and values */
             foreach (var i in IndexTable)
             {
-                Params p = new Params();
+                var p = new Params();
                 p.IndexTable = i;
 
                 // param name
@@ -117,7 +117,7 @@ namespace DiscTools.Inspection.Statics.SonyMethods
 
         public static string ReturnRegion(int regionCode)
         {
-            string region = "";
+            var region = "";
 
             switch (regionCode)
             {
@@ -132,8 +132,8 @@ namespace DiscTools.Inspection.Statics.SonyMethods
         public string ReadHexString(int offset, int length)
         {
             var bytes = Data.Skip(offset).Take(length).ToArray();
-            string hex = "";
-            foreach (byte b in bytes)
+            var hex = "";
+            foreach (var b in bytes)
             {
                 hex += b.ToString("X2");
             }
@@ -144,8 +144,8 @@ namespace DiscTools.Inspection.Statics.SonyMethods
         {
             var bytes = Data.Skip(offset).Take(length).ToArray();
             Array.Reverse(bytes);
-            string hex = "";
-            foreach (byte b in bytes)
+            var hex = "";
+            foreach (var b in bytes)
             {
                 hex += b.ToString("X2");
             }
@@ -161,8 +161,8 @@ namespace DiscTools.Inspection.Statics.SonyMethods
         public int[] ReadInts(int offset, int length)
         {
             var bytes = Data.Skip(offset).Take(length).ToArray();
-            List<int> list = new List<int>();
-            foreach (byte b in bytes)
+            var list = new List<int>();
+            foreach (var b in bytes)
             {
                 list.Add(Convert.ToInt32(b));
             }
@@ -174,7 +174,7 @@ namespace DiscTools.Inspection.Statics.SonyMethods
         {
             var bytes = Data.Skip(offset).Take(length).ToArray();
             Array.Reverse(bytes);
-            int result = BitConverter.ToInt32(bytes, 0);
+            var result = BitConverter.ToInt32(bytes, 0);
             return result;
         }
 
@@ -182,7 +182,7 @@ namespace DiscTools.Inspection.Statics.SonyMethods
         {
             var bytes = Data.Skip(offset).Take(length).ToArray();
             //Array.Reverse(bytes);
-            int result = BitConverter.ToInt32(bytes, 0);
+            var result = BitConverter.ToInt32(bytes, 0);
             return result;
         }
 

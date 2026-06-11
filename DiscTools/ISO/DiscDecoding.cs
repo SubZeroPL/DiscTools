@@ -20,12 +20,12 @@ namespace DiscTools.ISO
         {
             //return args.Select(s => s.Contains(" ") ? string.Format("\"{0}\"", s) : s).ToArray();
 
-            List<string> working = new List<string>();
-            foreach (string s in args)
+            var working = new List<string>();
+            foreach (var s in args)
             {
                 if (s.Contains(" "))
                 {
-                    string w = "\"" + s + "\"";
+                    var w = "\"" + s + "\"";
                     working.Add(w);
                 }
                 else
@@ -43,7 +43,7 @@ namespace DiscTools.ISO
         public AudioQueryResult QueryAudio(string path)
         {
             var ret = new AudioQueryResult();
-            string stdout = Run("-i", path).Text;
+            var stdout = Run("-i", path).Text;
             ret.IsAudio = rxHasAudio.Matches(stdout).Count > 0;
             return ret;
         }
@@ -55,7 +55,7 @@ namespace DiscTools.ISO
         {
             try
             {
-                string stdout = Run("-version").Text;
+                var stdout = Run("-version").Text;
                 if (stdout.Contains("ffmpeg version")) return true;
             }
             catch
@@ -73,14 +73,14 @@ namespace DiscTools.ISO
         public RunResults Run(params string[] args)
         {
             args = Escape(args);
-            StringBuilder sbCmdline = new StringBuilder();
-            for (int i = 0; i < args.Length; i++)
+            var sbCmdline = new StringBuilder();
+            for (var i = 0; i < args.Length; i++)
             {
                 sbCmdline.Append(args[i]);
                 if (i != args.Length - 1) sbCmdline.Append(' ');
             }
 
-            ProcessStartInfo oInfo = new ProcessStartInfo(FFMpegPath, sbCmdline.ToString())
+            var oInfo = new ProcessStartInfo(FFMpegPath, sbCmdline.ToString())
             {
                 UseShellExecute = false,
                 CreateNoWindow = true,
@@ -88,8 +88,8 @@ namespace DiscTools.ISO
                 RedirectStandardError = true
             };
 
-            Process proc = Process.Start(oInfo);
-            string result = proc.StandardOutput.ReadToEnd();
+            var proc = Process.Start(oInfo);
+            var result = proc.StandardOutput.ReadToEnd();
             result += proc.StandardError.ReadToEnd();
             proc.WaitForExit();
 
@@ -102,13 +102,13 @@ namespace DiscTools.ISO
 
         public byte[] DecodeAudio(string path)
         {
-            string tempfile = Path.GetTempFileName();
+            var tempfile = Path.GetTempFileName();
             try
             {
                 var runResults = Run("-i", path, "-xerror", "-f", "wav", "-ar", "44100", "-ac", "2", "-acodec", "pcm_s16le", "-y", tempfile);
                 if (runResults.ExitCode != 0)
                     throw new InvalidOperationException("Failure running ffmpeg for audio decode. here was its output:\r\n" + runResults.Text);
-                byte[] ret = File.ReadAllBytes(tempfile);
+                var ret = File.ReadAllBytes(tempfile);
                 if (ret.Length == 0)
                     throw new InvalidOperationException("Failure running ffmpeg for audio decode. here was its output:\r\n" + runResults.Text);
                 return ret;
@@ -137,7 +137,7 @@ namespace DiscTools.ISO
 
         bool CheckForAudio(string path)
         {
-            FFMpeg ffmpeg = new FFMpeg();
+            var ffmpeg = new FFMpeg();
             var qa = ffmpeg.QueryAudio(path);
             return qa.IsAudio;
         }
@@ -148,7 +148,7 @@ namespace DiscTools.ISO
         /// </summary>
         string FindAudio(string audioPath)
         {
-            string basePath = Path.GetFileNameWithoutExtension(audioPath);
+            var basePath = Path.GetFileNameWithoutExtension(audioPath);
             //look for potential candidates
             var di = new DirectoryInfo(Path.GetDirectoryName(audioPath));
             var fis = di.GetFiles();
@@ -175,7 +175,7 @@ namespace DiscTools.ISO
 
         public byte[] AcquireWaveData(string audioPath)
         {
-            string path = FindAudio(audioPath);
+            var path = FindAudio(audioPath);
             if (path == null)
             {
                 throw new AudioDecoder_Exception("Could not find source audio for: " + Path.GetFileName(audioPath));

@@ -1,28 +1,24 @@
 ﻿using DiscTools.ISO.Internal;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using DiscTools.ISO.DiscFormats;
 using DiscTools.ISO.Internal.Algorithms;
-using DiscTools.ISO.Internal.Jobs;
 using DiscTools.ISO.DiscFormats.Blobs;
-using DiscTools.ISO.DiscFormats.CUE;
 using System.IO;
 using System.Linq;
 
 namespace DiscTools.ISO
 {
-    public partial class Disc : IDisposable
+    public partial class Disc
     {
         /// <summary>
         /// Automagically loads a disc, without any fine-tuned control at all
         /// </summary>
-        public static Disc LoadAutomagic(string path)
+        public static Disc? LoadAutomagic(string path)
         {
-            var job = new DiscMountJob { IN_FromPath = path };
+            var job = new DiscMountJob { InFromPath = path };
             //job.IN_DiscInterface = DiscInterface.MednaDisc; //TEST
             job.Run();
-            return job.OUT_Disc;
+            return job.OutDisc;
         }
 
         /// <summary>
@@ -149,12 +145,12 @@ namespace DiscTools.ISO
                 for (;;)
                 {
                     //read block count. this format is really stupid. maybe its good for detecting non-ecm files or something.
-                    int b = stream.ReadByte();
+                    var b = stream.ReadByte();
                     if (b == -1) MisformedException();
-                    int bytes = 1;
-                    int T = b & 3;
+                    var bytes = 1;
+                    var T = b & 3;
                     long N = (b >> 2) & 0x1F;
-                    int nbits = 5;
+                    var nbits = 5;
                     while (b.Bit(7))
                     {
                         if (bytes == 5) MisformedException(); //if we're gonna need a 6th byte, this file is broken
@@ -173,9 +169,9 @@ namespace DiscTools.ISO
                     if (N >= 0x100000000)
                         MisformedException();
 
-                    uint todo = (uint)N + 1;
+                    var todo = (uint)N + 1;
 
-                    IndexEntry ie = new IndexEntry
+                    var ie = new IndexEntry
                     {
                         Number = todo,
                         ECMOffset = stream.Position,
@@ -225,10 +221,10 @@ namespace DiscTools.ISO
             {
                 using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
-                    int e = fs.ReadByte();
-                    int c = fs.ReadByte();
-                    int m = fs.ReadByte();
-                    int o = fs.ReadByte();
+                    var e = fs.ReadByte();
+                    var c = fs.ReadByte();
+                    var m = fs.ReadByte();
+                    var o = fs.ReadByte();
                     if (e != 'E' || c != 'C' || m != 'M' || o != 0)
                         return false;
                 }
@@ -242,9 +238,9 @@ namespace DiscTools.ISO
             int FindInIndex(long offset, int LastReadIndex)
             {
                 //try to avoid searching the index. check the last index we we used.
-                for (int i = 0; i < 2; i++) //try 2 times
+                for (var i = 0; i < 2; i++) //try 2 times
                 {
-                    IndexEntry last = Index[LastReadIndex];
+                    var last = Index[LastReadIndex];
                     if (LastReadIndex == Index.Count - 1)
                     {
                         //byte_pos would have to be after the last entry
@@ -255,7 +251,7 @@ namespace DiscTools.ISO
                     }
                     else
                     {
-                        IndexEntry next = Index[LastReadIndex + 1];
+                        var next = Index[LastReadIndex + 1];
                         if (offset >= last.LogicalOffset && offset < next.LogicalOffset)
                         {
                             return LastReadIndex;
@@ -267,7 +263,7 @@ namespace DiscTools.ISO
                 }
 
                 //Console.WriteLine("binary searched"); //use this to check for mistaken LastReadIndex logic resulting in binary searches during sequential access
-                int listIndex = Index.LowerBoundBinarySearch(idx => idx.LogicalOffset, offset);
+                var listIndex = Index.LowerBoundBinarySearch(idx => idx.LogicalOffset, offset);
                 System.Diagnostics.Debug.Assert(listIndex < Index.Count);
                 //Console.WriteLine("byte_pos {0:X8} using index #{1} at offset {2:X8}", offset, listIndex, Index[listIndex].LogicalOffset);
 
@@ -278,7 +274,7 @@ namespace DiscTools.ISO
             {
                 //sync
                 secbuf[0] = 0;
-                for (int i = 1; i <= 10; i++)
+                for (var i = 1; i <= 10; i++)
                     secbuf[i] = 0xFF;
                 secbuf[11] = 0x00;
 
@@ -289,7 +285,7 @@ namespace DiscTools.ISO
                         //mode 1
                         secbuf[15] = 0x01;
                         //reserved
-                        for (int i = 0x814; i <= 0x81B; i++)
+                        for (var i = 0x814; i <= 0x81B; i++)
                             secbuf[i] = 0x00;
                         break;
 
@@ -329,7 +325,7 @@ namespace DiscTools.ISO
             public int Read(long byte_pos, byte[] buffer, int offset, int _count)
             {
                 long remain = _count;
-                int completed = 0;
+                var completed = 0;
 
                 //we take advantage of the fact that we pretty much always read one sector at a time.
                 //this would be really inefficient if we only read one byte at a time.
@@ -337,18 +333,18 @@ namespace DiscTools.ISO
 
                 while (remain > 0)
                 {
-                    int listIndex = FindInIndex(byte_pos, Read_LastIndex);
+                    var listIndex = FindInIndex(byte_pos, Read_LastIndex);
 
-                    IndexEntry ie = Index[listIndex];
+                    var ie = Index[listIndex];
                     Read_LastIndex = listIndex;
 
                     if (ie.Type == 0)
                     {
                         //type 0 is special: its just a raw blob. so all we need to do is read straight out of the stream
-                        long blockOffset = byte_pos - ie.LogicalOffset;
-                        long bytesRemainInBlock = ie.Number - blockOffset;
+                        var blockOffset = byte_pos - ie.LogicalOffset;
+                        var bytesRemainInBlock = ie.Number - blockOffset;
 
-                        long todo = remain;
+                        var todo = remain;
                         if (bytesRemainInBlock < todo)
                             todo = bytesRemainInBlock;
 
@@ -360,7 +356,7 @@ namespace DiscTools.ISO
                                 toRead = int.MaxValue;
                             else toRead = (int)todo;
 
-                            int done = stream.Read(buffer, offset, toRead);
+                            var done = stream.Read(buffer, offset, toRead);
                             if (done != toRead)
                                 return completed;
 
@@ -378,7 +374,7 @@ namespace DiscTools.ISO
                     {
                         //these are sector-based types. they have similar handling.
 
-                        long blockOffset = byte_pos - ie.LogicalOffset;
+                        var blockOffset = byte_pos - ie.LogicalOffset;
 
                         //figure out which sector within the block we're in
                         int outSecSize;
@@ -389,12 +385,12 @@ namespace DiscTools.ISO
                         else if (ie.Type == 3) { outSecSize = 2336; inSecSize = 2328; outSecOffset = 16; }
                         else throw new InvalidOperationException();
 
-                        long secNumberInBlock = blockOffset / outSecSize;
-                        long secOffsetInEcm = secNumberInBlock * outSecSize;
-                        long bytesAskedIntoSector = blockOffset % outSecSize;
-                        long bytesRemainInSector = outSecSize - bytesAskedIntoSector;
+                        var secNumberInBlock = blockOffset / outSecSize;
+                        var secOffsetInEcm = secNumberInBlock * outSecSize;
+                        var bytesAskedIntoSector = blockOffset % outSecSize;
+                        var bytesRemainInSector = outSecSize - bytesAskedIntoSector;
 
-                        long todo = remain;
+                        var todo = remain;
                         if (bytesRemainInSector < todo)
                             todo = bytesRemainInSector;
 
@@ -425,7 +421,7 @@ namespace DiscTools.ISO
                         //sector is decoded to 2352 bytes. Handling doesnt depend much on type from here
 
                         Array.Copy(Read_SectorBuf, (int)bytesAskedIntoSector + outSecOffset, buffer, offset, todo);
-                        int done = (int)todo;
+                        var done = (int)todo;
 
                         offset += done;
                         completed += done;
@@ -482,7 +478,7 @@ namespace DiscTools.ISO
                 const int buffersize = 2352 * 75 * 2;
                 if (fs == null)
                     fs = new BufferedStream(new FileStream(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read), buffersize);
-                long target = byte_pos + Offset;
+                var target = byte_pos + Offset;
                 if (fs.Position != target)
                     fs.Position = target;
                 return fs.Read(buffer, offset, count);
@@ -553,7 +549,7 @@ namespace DiscTools.ISO
                     const int buffersize = 2352 * 75 * 2;
                     if (fs == null)
                         fs = new BufferedStream(new FileStream(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read), buffersize);
-                    long target = byte_pos + Offset;
+                    var target = byte_pos + Offset;
                     if (fs.Position != target)
                         fs.Position = target;
                     return fs.Read(buffer, offset, count);
@@ -663,8 +659,8 @@ namespace DiscTools.ISO
 
             public int Read(long byte_pos, byte[] buffer, int offset, int count)
             {
-                int todo = count;
-                long end = byte_pos + todo;
+                var todo = count;
+                var end = byte_pos + todo;
                 if (end > srcBlobLength)
                 {
                     long temp = (int)(srcBlobLength - byte_pos);

@@ -112,7 +112,7 @@ namespace DiscTools.ISO
                 discView = EDiscStreamView.DiscStreamView_Mode2_Form1_2048;
 
             var iso = new ISOFile();
-            bool isIso = iso.Parse(new DiscStream(disc, discView, 0));
+            var isIso = iso.Parse(new DiscStream(disc, discView, 0));
 
             if (isIso)
             {
@@ -162,7 +162,7 @@ namespace DiscTools.ISO
         {
             foreach (var c in disc.TOC.TOCItems.Where(a => a.Exists == true && a.IsData == true))
             {
-                int curLba = c.LBA;
+                var curLba = c.LBA;
                 var data = ReadSectorCached(c.LBA + 1);
                 if (System.Text.Encoding.Default.GetString(data).Contains("PC Engine") &&
                     !System.Text.Encoding.Default.GetString(data).Contains("PC-FX"))
@@ -184,8 +184,8 @@ namespace DiscTools.ISO
                 sectorCache[lba] = data;
             }
 
-            byte[] cmp = System.Text.Encoding.ASCII.GetBytes(s);
-            byte[] cmp2 = new byte[cmp.Length];
+            var cmp = System.Text.Encoding.ASCII.GetBytes(s);
+            var cmp2 = new byte[cmp.Length];
             Buffer.BlockCopy(data, n, cmp2, 0, cmp.Length);
             return System.Linq.Enumerable.SequenceEqual(cmp, cmp2);
         }
@@ -221,7 +221,7 @@ namespace DiscTools.ISO
             if (!_sectorCache.TryGetValue(lba, out data))
             {
                 data = new byte[2048];
-                int read = _dsr.ReadLBA_2048(lba, data, 0);
+                var read = _dsr.ReadLBA_2048(lba, data, 0);
                 if (read != 2048)
                     return null;
                 _sectorCache[lba] = data;
@@ -261,8 +261,8 @@ namespace DiscTools.ISO
                 sectorCache[lba] = data;
             }
 
-            byte[] cmp = System.Text.Encoding.ASCII.GetBytes(s);
-            byte[] cmp2 = new byte[cmp.Length];
+            var cmp = System.Text.Encoding.ASCII.GetBytes(s);
+            var cmp2 = new byte[cmp.Length];
             Buffer.BlockCopy(data, n, cmp2, 0, cmp.Length);
             return cmp2; // System.Linq.Enumerable.SequenceEqual(cmp, cmp2);
         }

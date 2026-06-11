@@ -35,8 +35,8 @@ namespace DiscTools.ISO.DiscFormats
         {
             using (var fs = File.OpenRead(path))
             {
-                BinaryReader br = new BinaryReader(fs);
-                string sig = br.ReadStringFixedAscii(4);
+                var br = new BinaryReader(fs);
+                var sig = br.ReadStringFixedAscii(4);
                 if (sig != "SBI\0")
                     return false;
             }

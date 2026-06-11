@@ -157,8 +157,8 @@ namespace DiscTools.Objects
         public string ReadHexString(int offset, int length)
         {
             var bytes = _Data.Skip(offset).Take(length).ToArray();
-            string hex = "";
-            foreach (byte b in bytes)
+            var hex = "";
+            foreach (var b in bytes)
             {
                 hex += b.ToString("X2");
             }
@@ -169,8 +169,8 @@ namespace DiscTools.Objects
         {
             var bytes = _Data.Skip(offset).Take(length).ToArray();
             Array.Reverse(bytes);
-            string hex = "";
-            foreach (byte b in bytes)
+            var hex = "";
+            foreach (var b in bytes)
             {
                 hex += b.ToString("X2");
             }
@@ -186,8 +186,8 @@ namespace DiscTools.Objects
         public int[] ReadInts(int offset, int length)
         {
             var bytes = _Data.Skip(offset).Take(length).ToArray();
-            List<int> list = new List<int>();
-            foreach (byte b in bytes)
+            var list = new List<int>();
+            foreach (var b in bytes)
             {
                 list.Add(Convert.ToInt32(b));
             }
@@ -205,7 +205,7 @@ namespace DiscTools.Objects
             if (length == 2)
                 return BitConverter.ToInt16(bytes, 0);
 
-            int result = BitConverter.ToInt32(bytes, 0);
+            var result = BitConverter.ToInt32(bytes, 0);
             return result;
         }
 
@@ -220,7 +220,7 @@ namespace DiscTools.Objects
             if (length == 2)
                 return BitConverter.ToInt16(bytes, 0);
 
-            int result = BitConverter.ToInt32(bytes, 0);
+            var result = BitConverter.ToInt32(bytes, 0);
             return result;
         }
 

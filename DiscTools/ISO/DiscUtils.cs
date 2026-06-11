@@ -9,7 +9,7 @@ namespace DiscTools.ISO
         static byte IntToBCD(int n)
         {
             int ones;
-            int tens = Math.DivRem(n, 10, out ones);
+            var tens = Math.DivRem(n, 10, out ones);
             return (byte)((tens << 4) | ones);
         }
 
@@ -18,7 +18,7 @@ namespace DiscTools.ISO
         /// </summary>
         public static int BCD_Byte(this int val)
         {
-            byte ret = (byte)(val % 10);
+            var ret = (byte)(val % 10);
             ret += (byte)(16 * (val / 10));
             return ret;
         }

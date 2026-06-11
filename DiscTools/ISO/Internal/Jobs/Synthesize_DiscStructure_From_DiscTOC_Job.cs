@@ -33,8 +33,8 @@ namespace DiscTools.ISO.Internal.Jobs
                 LBA = -new Timestamp(99, 99, 99).Sector //obvious garbage
             });
 
-            int ntracks = TOCRaw.LastRecordedTrackNumber - TOCRaw.FirstRecordedTrackNumber + 1;
-            for (int i = 0; i < ntracks; i++)
+            var ntracks = TOCRaw.LastRecordedTrackNumber - TOCRaw.FirstRecordedTrackNumber + 1;
+            for (var i = 0; i < ntracks; i++)
             {
                 var item = TOCRaw.TOCItems[i + 1];
                 var track = new DiscStructure.Track()
@@ -71,7 +71,7 @@ namespace DiscTools.ISO.Internal.Jobs
             });
 
             //link track list 
-            for (int i = 0; i < session.Tracks.Count - 1; i++)
+            for (var i = 0; i < session.Tracks.Count - 1; i++)
             {
                 session.Tracks[i].NextTrack = session.Tracks[i + 1];
             }

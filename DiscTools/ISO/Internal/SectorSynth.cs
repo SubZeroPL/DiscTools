@@ -134,7 +134,7 @@ namespace DiscTools.ISO.Internal
 
         public ISectorSynthJob2448 Get(int lba)
         {
-            int index = lba - FirstLBA;
+            var index = lba - FirstLBA;
             if (index < 0) return null;
             if (index >= Sectors.Count) return null;
             return Sectors[index];
@@ -209,7 +209,7 @@ namespace DiscTools.ISO.Internal
                 return;
 
             //apply patched subQ
-            for (int i = 0; i < 12; i++)
+            for (var i = 0; i < 12; i++)
                 job.DestBuffer2448[2352 + 12 + i] = Buffer_SubQ[i];
         }
     }
@@ -229,15 +229,15 @@ namespace DiscTools.ISO.Internal
             //  data scrambling properly), but data track->audio leadout could break things in an insidious manner for the more accurate drive emulation code).
 
             var ses = job.Disc.Structure.Sessions[SessionNumber];
-            int lba_relative = job.LBA - ses.LeadoutTrack.LBA;
+            var lba_relative = job.LBA - ses.LeadoutTrack.LBA;
 
             //data is zero
 
-            int ts = lba_relative;
-            int ats = job.LBA;
+            var ts = lba_relative;
+            var ats = job.LBA;
 
             const int ADR = 0x1; // Q channel data encodes position
-            EControlQ control = ses.LeadoutTrack.Control;
+            var control = ses.LeadoutTrack.Control;
 
             //ehhh? CDI?
             //if(toc.tracks[toc.last_track].valid)
@@ -246,7 +246,7 @@ namespace DiscTools.ISO.Internal
             // control |= 0x4;
             control |= (EControlQ)(((int)ses.LastInformationTrack.Control) & 4);
 
-            SubchannelQ sq = new SubchannelQ();
+            var sq = new SubchannelQ();
             sq.SetStatus(ADR, control);
             sq.q_tno.BCDValue = 0xAA;
             sq.q_index.BCDValue = 0x01;
@@ -255,7 +255,7 @@ namespace DiscTools.ISO.Internal
             sq.zero = 0;
 
             //finally, rely on a gap sector to do the heavy lifting to synthesize this
-            DiscFormats.CUE.CueTrackType TrackType = DiscFormats.CUE.CueTrackType.Audio;
+            var TrackType = DiscFormats.CUE.CueTrackType.Audio;
             if (ses.LeadoutTrack.IsData)
             {
                 if (job.Disc.TOC.Session1Format == SessionFormat.Type20_CDXA || job.Disc.TOC.Session1Format == SessionFormat.Type10_CDI)
@@ -264,7 +264,7 @@ namespace DiscTools.ISO.Internal
                     TrackType = DiscFormats.CUE.CueTrackType.Mode1_2352;
             }
 
-            DiscFormats.CUE.SS_Gap ss_gap = new DiscFormats.CUE.SS_Gap()
+            var ss_gap = new DiscFormats.CUE.SS_Gap()
             {
                 Policy = Policy,
                 sq = sq,

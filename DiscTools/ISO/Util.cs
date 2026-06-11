@@ -13,12 +13,12 @@ namespace DiscTools.ISO
         public static void CopyStream(Stream src, Stream dest, long len)
         {
             const int size = 0x2000;
-            byte[] buffer = new byte[size];
+            var buffer = new byte[size];
             while (len > 0)
             {
-                long todo = len;
+                var todo = len;
                 if (len > size) todo = size;
-                int n = src.Read(buffer, 0, (int)todo);
+                var n = src.Read(buffer, 0, (int)todo);
                 dest.Write(buffer, 0, n);
                 len -= n;
             }
@@ -29,7 +29,7 @@ namespace DiscTools.ISO
         /// </summary>
         public static bool TryWaitForFileToVanish(string path)
         {
-            for (int i = 0; i < 25; i++) //250ms
+            for (var i = 0; i < 25; i++) //250ms
             {
                 if (!File.Exists(path))
                     return true;
@@ -115,11 +115,11 @@ namespace DiscTools.ISO
                 throw new ArgumentException();
             }
 
-            int len = str.Length / 2;
-            for (int i = 0; i < len; i++)
+            var len = str.Length / 2;
+            for (var i = 0; i < len; i++)
             {
-                int d = 0;
-                for (int j = 0; j < 2; j++)
+                var d = 0;
+                for (var j = 0; j < 2; j++)
                 {
                     var c = char.ToLower(str[(i * 2) + j]);
                     if (c >= '0' && c <= '9')
@@ -164,7 +164,7 @@ namespace DiscTools.ISO
         public static bool[] ByteBufferToBoolBuffer(byte[] buf)
         {
             var ret = new bool[buf.Length];
-            for (int i = 0; i < buf.Length; i++)
+            for (var i = 0; i < buf.Length; i++)
             {
                 ret[i] = buf[i] != 0;
             }
@@ -174,7 +174,7 @@ namespace DiscTools.ISO
         public static byte[] BoolBufferToByteBuffer(bool[] buf)
         {
             var ret = new byte[buf.Length];
-            for (int i = 0; i < buf.Length; i++)
+            for (var i = 0; i < buf.Length; i++)
             {
                 ret[i] = (byte)(buf[i] ? 1 : 0);
             }
@@ -183,9 +183,9 @@ namespace DiscTools.ISO
 
         public static short[] ByteBufferToShortBuffer(byte[] buf)
         {
-            int num = buf.Length / 2;
+            var num = buf.Length / 2;
             var ret = new short[num];
-            for (int i = 0; i < num; i++)
+            for (var i = 0; i < num; i++)
             {
                 ret[i] = (short)(buf[i * 2] | (buf[i * 2 + 1] << 8));
             }
@@ -195,9 +195,9 @@ namespace DiscTools.ISO
 
         public static byte[] ShortBufferToByteBuffer(short[] buf)
         {
-            int num = buf.Length;
+            var num = buf.Length;
             var ret = new byte[num * 2];
-            for (int i = 0; i < num; i++)
+            for (var i = 0; i < num; i++)
             {
                 ret[i * 2 + 0] = (byte)(buf[i] & 0xFF);
                 ret[i * 2 + 1] = (byte)((buf[i] >> 8) & 0xFF);
@@ -208,9 +208,9 @@ namespace DiscTools.ISO
 
         public static ushort[] ByteBufferToUshortBuffer(byte[] buf)
         {
-            int num = buf.Length / 2;
+            var num = buf.Length / 2;
             var ret = new ushort[num];
-            for (int i = 0; i < num; i++)
+            for (var i = 0; i < num; i++)
             {
                 ret[i] = (ushort)(buf[i * 2] | (buf[i * 2 + 1] << 8));
             }
@@ -220,9 +220,9 @@ namespace DiscTools.ISO
 
         public static byte[] UshortBufferToByteBuffer(ushort[] buf)
         {
-            int num = buf.Length;
+            var num = buf.Length;
             var ret = new byte[num * 2];
-            for (int i = 0; i < num; i++)
+            for (var i = 0; i < num; i++)
             {
                 ret[i * 2 + 0] = (byte)(buf[i] & 0xFF);
                 ret[i * 2 + 1] = (byte)((buf[i] >> 8) & 0xFF);
@@ -233,9 +233,9 @@ namespace DiscTools.ISO
 
         public static uint[] ByteBufferToUintBuffer(byte[] buf)
         {
-            int num = buf.Length / 4;
+            var num = buf.Length / 4;
             var ret = new uint[num];
-            for (int i = 0; i < num; i++)
+            for (var i = 0; i < num; i++)
             {
                 ret[i] = (uint)(buf[i * 4] | (buf[i * 4 + 1] << 8) | (buf[i * 4 + 2] << 16) | (buf[i * 4 + 3] << 24));
             }
@@ -245,9 +245,9 @@ namespace DiscTools.ISO
 
         public static byte[] UintBufferToByteBuffer(uint[] buf)
         {
-            int num = buf.Length;
+            var num = buf.Length;
             var ret = new byte[num * 4];
-            for (int i = 0; i < num; i++)
+            for (var i = 0; i < num; i++)
             {
                 ret[i * 4 + 0] = (byte)(buf[i] & 0xFF);
                 ret[i * 4 + 1] = (byte)((buf[i] >> 8) & 0xFF);
@@ -260,9 +260,9 @@ namespace DiscTools.ISO
 
         public static int[] ByteBufferToIntBuffer(byte[] buf)
         {
-            int num = buf.Length / 4;
+            var num = buf.Length / 4;
             var ret = new int[num];
-            for (int i = 0; i < num; i++)
+            for (var i = 0; i < num; i++)
             {
                 ret[i] = buf[(i * 4) + 3];
                 ret[i] <<= 8;
@@ -278,9 +278,9 @@ namespace DiscTools.ISO
 
         public static byte[] IntBufferToByteBuffer(int[] buf)
         {
-            int num = buf.Length;
+            var num = buf.Length;
             var ret = new byte[num * 4];
-            for (int i = 0; i < num; i++)
+            for (var i = 0; i < num; i++)
             {
                 ret[i * 4 + 0] = (byte)(buf[i] & 0xFF);
                 ret[i * 4 + 1] = (byte)((buf[i] >> 8) & 0xFF);
@@ -293,17 +293,17 @@ namespace DiscTools.ISO
 
         public static byte[] ReadByteBuffer(BinaryReader br, bool returnNull)
         {
-            int len = br.ReadInt32();
+            var len = br.ReadInt32();
             if (len == 0 && returnNull)
             {
                 return null;
             }
 
             var ret = new byte[len];
-            int ofs = 0;
+            var ofs = 0;
             while (len > 0)
             {
-                int done = br.Read(ret, ofs, len);
+                var done = br.Read(ret, ofs, len);
                 ofs += done;
                 len -= done;
             }
@@ -321,11 +321,11 @@ namespace DiscTools.ISO
         {
             var ba = (byte*)a;
             var bb = (byte*)b;
-            for (int i = 0; i < len; i++)
+            for (var i = 0; i < len; i++)
             {
-                byte _a = ba[i];
-                byte _b = bb[i];
-                int c = _a - _b;
+                var _a = ba[i];
+                var _b = bb[i];
+                var c = _a - _b;
                 if (c != 0)
                 {
                     return c;
@@ -338,7 +338,7 @@ namespace DiscTools.ISO
         public static void Memset(void* ptr, int val, int len)
         {
             var bptr = (byte*)ptr;
-            for (int i = 0; i < len; i++)
+            for (var i = 0; i < len; i++)
             {
                 bptr[i] = (byte)val;
             }
@@ -347,9 +347,9 @@ namespace DiscTools.ISO
         public static void Memset32(void* ptr, int val, int len)
         {
             System.Diagnostics.Debug.Assert(len % 4 == 0);
-            int dwords = len / 4;
-            int* dwptr = (int*)ptr;
-            for (int i = 0; i < dwords; i++)
+            var dwords = len / 4;
+            var dwptr = (int*)ptr;
+            for (var i = 0; i < dwords; i++)
             {
                 dwptr[i] = val;
             }
@@ -447,7 +447,7 @@ namespace DiscTools.ISO
             // This is optimized for good performance on both the x86 and x64 JITs. Don't change anything without benchmarking.
             do
             {
-                uint x = value & 0x7FU;
+                var x = value & 0x7FU;
                 value >>= 7;
                 data[index++] = (byte)((value != 0U ? 0x80U : 0U) | x);
             }
@@ -457,12 +457,12 @@ namespace DiscTools.ISO
         public static uint ReadUnsigned(byte[] data, ref int index)
         {
             // This is optimized for good performance on both the x86 and x64 JITs. Don't change anything without benchmarking.
-            uint value = 0U;
-            int shiftCount = 0;
+            var value = 0U;
+            var shiftCount = 0;
             bool isLastByte; // Negating the comparison and moving it earlier in the loop helps a lot on x86 for some reason
             do
             {
-                uint x = (uint)data[index++];
+                var x = (uint)data[index++];
                 isLastByte = (x & 0x80U) == 0U;
                 value |= (x & 0x7FU) << shiftCount;
                 shiftCount += 7;
@@ -511,10 +511,10 @@ namespace DiscTools.ISO
         {
             var returnVal = new List<Type>();
 
-            foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
             {
-                Type[] assemblyTypes = a.GetTypes();
-                for (int j = 0; j < assemblyTypes.Length; j++)
+                var assemblyTypes = a.GetTypes();
+                for (var j = 0; j < assemblyTypes.Length; j++)
                 {
                     if (assemblyTypes[j].Name.ToLower() == className.ToLower())
                     {

@@ -127,7 +127,7 @@ namespace DiscTools.Inspection
 
             var tocItems = disc.TOC.TOCItems.Where(a => a.Exists == true && a.IsData == true).ToList();
 
-            List<int> tocLBAs = new List<int>();
+            var tocLBAs = new List<int>();
             // we are going to check LBA + 1 as some systems (pcfx / pcecd) have some weird stuff going on that I havent been able to work out
             // possibly I am confused as to whether bizhawk has lba starting at 0 or 1
             foreach (var item in tocItems)
@@ -138,12 +138,12 @@ namespace DiscTools.Inspection
 
             tocLBAs = tocLBAs.Distinct().OrderBy(a => a).ToList();
 
-            foreach (int i in tocLBAs)
+            foreach (var i in tocLBAs)
             {
                 CurrentLBA = i;
-                byte[] data = di.ReadData(i, 2048);
+                var data = di.ReadData(i, 2048);
                 currSector = data;
-                string text = System.Text.Encoding.Default.GetString(data);
+                var text = System.Text.Encoding.Default.GetString(data);
 
                 // psx
                 if (GetPSXData(text))
@@ -206,11 +206,11 @@ namespace DiscTools.Inspection
             /* Non-ISO 0-n LBA iterations  */
             /////////////////////////////////
 
-            for (int i = 0; i < 10000; i++)
+            for (var i = 0; i < 10000; i++)
             {
-                byte[] data = di.ReadData(i, 2048);
+                var data = di.ReadData(i, 2048);
                 currSector = data;
-                string dataStr = System.Text.Encoding.Default.GetString(data);
+                var dataStr = System.Text.Encoding.Default.GetString(data);
 
                 // psx - dont bother
                 /*
@@ -277,11 +277,11 @@ namespace DiscTools.Inspection
 
             if (IntenseScan)
             {
-                for (int i = 0; i < 1000000; i++)
+                for (var i = 0; i < 1000000; i++)
                 {
-                    byte[] data = di.ReadData(i, 2048);
+                    var data = di.ReadData(i, 2048);
                     currSector = data;
-                    string dataStr = System.Text.Encoding.Default.GetString(data);
+                    var dataStr = System.Text.Encoding.Default.GetString(data);
 
                     /*
                     // psx

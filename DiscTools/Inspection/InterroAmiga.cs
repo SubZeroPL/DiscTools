@@ -32,7 +32,7 @@ namespace DiscTools.Inspection
         {
             currSector = di.ReadData(CurrentLBA, 2048);
 
-            string sS = System.Text.Encoding.Default.GetString(currSector);            
+            var sS = System.Text.Encoding.Default.GetString(currSector);            
 
             return GetAmigaData(sS);
         }

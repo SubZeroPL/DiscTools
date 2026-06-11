@@ -19,38 +19,38 @@ namespace DiscTools.ISO
         /// <summary>
         /// The filename to be loaded
         /// </summary>
-        public string IN_FromPath;
+        public string? InFromPath;
 
         /// <summary>
         /// Slow-loading cues won't finish loading if this threshold is exceeded.
         /// Set to 10 to always load a cue
         /// </summary>
-        public int IN_SlowLoadAbortThreshold = 10;
+        private const int InSlowLoadAbortThreshold = 10;
 
         /// <summary>
         /// Cryptic policies to be used when mounting the disc.
         /// </summary>
-        public DiscMountPolicy IN_DiscMountPolicy = new DiscMountPolicy();
+        private readonly DiscMountPolicy _inDiscMountPolicy = new DiscMountPolicy();
 
         /// <summary>
         /// The interface to be used for loading the disc.
         /// Usually you'll want DiscInterface.BizHawk, but others can be used for A/B testing
         /// </summary>
-        public DiscInterface IN_DiscInterface = DiscInterface.BizHawk;
+        private DiscInterface _inDiscInterface = DiscInterface.BizHawk;
 
         /// <summary>
         /// The resulting disc
         /// </summary>
-        public Disc OUT_Disc;
+        public Disc? OutDisc;
 
         /// <summary>
         /// Whether a mount operation was aborted due to being too slow
         /// </summary>
-        public bool OUT_SlowLoadAborted;
+        public bool OutSlowLoadAborted;
 
         public void Run()
         {
-            switch (IN_DiscInterface)
+            switch (_inDiscInterface)
             {
                 case DiscInterface.LibMirage:
                     throw new NotSupportedException("LibMirage not supported yet");
@@ -62,31 +62,31 @@ namespace DiscTools.ISO
                     break;
             }
 
-            if (OUT_Disc != null)
+            if (OutDisc != null)
             {
-                OUT_Disc.Name = Path.GetFileName(IN_FromPath);
+                OutDisc.Name = Path.GetFileName(InFromPath);
 
                 //generate toc and structure:
                 //1. TOCRaw from RawTOCEntries
-                var tocSynth = new Synthesize_DiscTOC_From_RawTOCEntries_Job() { Entries = OUT_Disc.RawTOCEntries };
+                var tocSynth = new Synthesize_DiscTOC_From_RawTOCEntries_Job() { Entries = OutDisc.RawTOCEntries };
                 tocSynth.Run();
-                OUT_Disc.TOC = tocSynth.Result;
+                OutDisc.TOC = tocSynth.Result;
                 //2. Structure from TOCRaw
-                var structureSynth = new Synthesize_DiscStructure_From_DiscTOC_Job() { IN_Disc = OUT_Disc, TOCRaw = OUT_Disc.TOC };
+                var structureSynth = new Synthesize_DiscStructure_From_DiscTOC_Job() { IN_Disc = OutDisc, TOCRaw = OutDisc.TOC };
                 structureSynth.Run();
-                OUT_Disc.Structure = structureSynth.Result;
+                OutDisc.Structure = structureSynth.Result;
 
                 //insert a synth provider to take care of the leadout track
                 //currently, we let mednafen take care of its own leadout track (we'll make that controllable later)
-                if (IN_DiscInterface != DiscInterface.MednaDisc)
+                if (_inDiscInterface != DiscInterface.MednaDisc)
                 {
                     var ss_leadout = new SS_Leadout()
                     {
                         SessionNumber = 1,
-                        Policy = IN_DiscMountPolicy
+                        Policy = _inDiscMountPolicy
                     };
-                    Func<int, bool> condition = (int lba) => lba >= OUT_Disc.Session1.LeadoutLBA;
-                    new ConditionalSectorSynthProvider().Install(OUT_Disc, condition, ss_leadout);
+                    var condition = (int lba) => lba >= OutDisc.Session1.LeadoutLBA;
+                    new ConditionalSectorSynthProvider().Install(OutDisc, condition, ss_leadout);
                 }
 
                 //apply SBI if it exists
@@ -107,7 +107,7 @@ namespace DiscTools.ISO
 
         void RunBizHawk()
         {
-            string infile = IN_FromPath;
+            var infile = InFromPath;
             string cue_content = null;
 
             var cfr = new CueFileResolver();
@@ -118,7 +118,7 @@ namespace DiscTools.ISO
             if (ext == ".iso")
             {
                 //make a fake cue file to represent this iso file and rerun it as a cue
-                string filebase = Path.GetFileName(infile);
+                var filebase = Path.GetFileName(infile);
                 cue_content = string.Format(@"
 						FILE ""{0}"" BINARY
 							TRACK 01 MODE1/2048
@@ -133,9 +133,9 @@ namespace DiscTools.ISO
 
                 //TODO - make sure code is designed so no matter what happens, a disc is disposed in case of errors.
                 //perhaps the CUE_Format2 (once renamed to something like Context) can handle that
-                var cuePath = IN_FromPath;
+                var cuePath = InFromPath;
                 var cueContext = new CUE_Context();
-                cueContext.DiscMountPolicy = IN_DiscMountPolicy;
+                cueContext.DiscMountPolicy = _inDiscMountPolicy;
 
                 cueContext.Resolver = cfr;
                 if (!cfr.IsHardcodedResolve) cfr.SetBaseDirectory(Path.GetDirectoryName(infile));
@@ -145,7 +145,7 @@ namespace DiscTools.ISO
                 if (cue_content == null)
                     cue_content = File.ReadAllText(cuePath);
                 parseJob.IN_CueString = cue_content;
-                bool okParse = true;
+                var okParse = true;
                 try { parseJob.Run(parseJob); }
                 catch (DiscJobAbortException) { okParse = false; parseJob.FinishLog(); }
                 if (!string.IsNullOrEmpty(parseJob.OUT_Log)) Console.WriteLine(parseJob.OUT_Log);
@@ -158,7 +158,7 @@ namespace DiscTools.ISO
                 var compileJob = new CompileCueJob();
                 compileJob.IN_CueContext = cueContext;
                 compileJob.IN_CueFile = parseJob.OUT_CueFile;
-                bool okCompile = true;
+                var okCompile = true;
                 try { compileJob.Run(); }
                 catch (DiscJobAbortException) { okCompile = false; compileJob.FinishLog(); }
                 if (!string.IsNullOrEmpty(compileJob.OUT_Log)) Console.WriteLine(compileJob.OUT_Log);
@@ -167,10 +167,10 @@ namespace DiscTools.ISO
                     goto DONE;
 
                 //check slow loading threshold
-                if (compileJob.OUT_LoadTime > IN_SlowLoadAbortThreshold)
+                if (compileJob.OUT_LoadTime > InSlowLoadAbortThreshold)
                 {
                     Warn("Loading terminated due to slow load threshold");
-                    OUT_SlowLoadAborted = true;
+                    OutSlowLoadAborted = true;
                     goto DONE;
                 }
 
@@ -182,27 +182,27 @@ namespace DiscTools.ISO
                 if (!string.IsNullOrEmpty(loadJob.OUT_Log)) Console.WriteLine(loadJob.OUT_Log);
                 ConcatenateJobLog(loadJob);
 
-                OUT_Disc = loadJob.OUT_Disc;
+                OutDisc = loadJob.OUT_Disc;
                 //OUT_Disc.DiscMountPolicy = IN_DiscMountPolicy; //NOT SURE WE NEED THIS (only makes sense for cue probably)
             }
             else if (ext == ".ccd")
             {
-                CCD_Format ccdLoader = new CCD_Format();
-                OUT_Disc = ccdLoader.LoadCCDToDisc(IN_FromPath, IN_DiscMountPolicy);
+                var ccdLoader = new CCD_Format();
+                OutDisc = ccdLoader.LoadCCDToDisc(InFromPath, _inDiscMountPolicy);
             }
 
 
         DONE:
 
             //setup the lowest level synth provider
-            if (OUT_Disc != null)
+            if (OutDisc != null)
             {
                 var sssp = new ArraySectorSynthProvider()
                 {
-                    Sectors = OUT_Disc._Sectors,
+                    Sectors = OutDisc._Sectors,
                     FirstLBA = -150
                 };
-                OUT_Disc.SynthProvider = sssp;
+                OutDisc.SynthProvider = sssp;
             }
         }
     }

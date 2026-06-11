@@ -46,7 +46,7 @@ namespace DiscTools.ISO
             // Go to the beginning of the set of directories
             s.Seek(this.Offset * ISOFile.SECTOR_SIZE, SeekOrigin.Begin);
 
-            List<ISONodeRecord> records = new List<ISONodeRecord>();
+            var records = new List<ISONodeRecord>();
 
             // Read the directory entries
             while (s.Position < ((this.Offset * ISOFile.SECTOR_SIZE) + this.Length))
@@ -98,10 +98,10 @@ namespace DiscTools.ISO
                 }
             }
 
-            long currentPosition = s.Position;
+            var currentPosition = s.Position;
 
             // Iterate over directories...
-            foreach (KeyValuePair<string, ISONode> child in this.Children)
+            foreach (var child in this.Children)
             {
                 // Parse this node
                 if (child.Key != ISONodeRecord.CURRENT_DIRECTORY &&
@@ -126,25 +126,25 @@ namespace DiscTools.ISO
         public void Print(int depth)
         {
             // Get the tabs string
-            string tabs = "";
-            for (int i = 0; i < depth; i++)
+            var tabs = "";
+            for (var i = 0; i < depth; i++)
             {
                 tabs += "  ";
             }
 
             // Get the names and sort
-            List<string> namL = new List<string>();
+            var namL = new List<string>();
             foreach (var s in this.Children.Keys)
             {
                 namL.Add(s);
             }
-            string[] names = namL.ToArray(); //this.Children.Keys.ToArray();
+            var names = namL.ToArray(); //this.Children.Keys.ToArray();
             Array.Sort(names);
 
             // Print the directory names recursively
-            foreach (string s in names)
+            foreach (var s in names)
             {
-                ISONode n = this.Children[s];
+                var n = this.Children[s];
                 Console.WriteLine(tabs + s);
                 if (s != ISONodeRecord.CURRENT_DIRECTORY &&
                     s != ISONodeRecord.PARENT_DIRECTORY &&

@@ -86,14 +86,14 @@ namespace DiscTools.ISO.DiscFormats.CUE
                         }
                     case CompiledCueFileType.DecodeAudio:
                         {
-                            FFMpeg ffmpeg = new FFMpeg();
+                            var ffmpeg = new FFMpeg();
                             if (!ffmpeg.QueryServiceAvailable())
                             {
                                 return;
                                 //throw new DiscReferenceException(ccf.FullPath, "No decoding service was available (make sure ffmpeg.exe is available. even though this may be a wav, ffmpeg is used to load oddly formatted wave files. If you object to this, please send us a note and we'll see what we can do. It shouldn't be too hard.)");
                             }
-                            AudioDecoder dec = new AudioDecoder();
-                            byte[] buf = dec.AcquireWaveData(ccf.FullPath);
+                            var dec = new AudioDecoder();
+                            var buf = dec.AcquireWaveData(ccf.FullPath);
                             var blob = new Disc.Blob_WaveFile();
                             OUT_Disc.DisposableResources.Add(file_blob = blob);
                             blob.Load(new MemoryStream(buf));
@@ -114,7 +114,7 @@ namespace DiscTools.ISO.DiscFormats.CUE
         {
             var compiledTracks = IN_CompileJob.OUT_CompiledCueTracks;
 
-            for (int t = 0; t < compiledTracks.Count; t++)
+            for (var t = 0; t < compiledTracks.Count; t++)
             {
                 var cct = compiledTracks[t];
 
@@ -135,7 +135,7 @@ namespace DiscTools.ISO.DiscFormats.CUE
 
         void EmitRawTOCEntry(CompiledCueTrack cct)
         {
-            SubchannelQ toc_sq = new SubchannelQ();
+            var toc_sq = new SubchannelQ();
             //absent some kind of policy for how to set it, this is a safe assumption:
             byte toc_ADR = 1;
             toc_sq.SetStatus(toc_ADR, (EControlQ)(int)cct.Flags);
@@ -158,8 +158,8 @@ namespace DiscTools.ISO.DiscFormats.CUE
 
             //generation state
             int curr_index;
-            int curr_blobIndex = -1;
-            int curr_blobMSF = -1;
+            var curr_blobIndex = -1;
+            var curr_blobMSF = -1;
             BlobInfo curr_blobInfo = null;
             long curr_blobOffset = -1;
 
@@ -172,20 +172,20 @@ namespace DiscTools.ISO.DiscFormats.CUE
 
             //loop from track 1 to 99
             //(track 0 isnt handled yet, that's way distant work)
-            for (int t = 1; t < TrackInfos.Count; t++)
+            for (var t = 1; t < TrackInfos.Count; t++)
             {
-                TrackInfo ti = TrackInfos[t];
-                CompiledCueTrack cct = ti.CompiledCueTrack;
+                var ti = TrackInfos[t];
+                var cct = ti.CompiledCueTrack;
 
                 //---------------------------------
                 //setup track pregap processing
                 //per "Example 05" on digitalx.org, pregap can come from index specification and pregap command
-                int specifiedPregapLength = cct.PregapLength.Sector;
-                int impliedPregapLength = cct.Indexes[1].FileMSF.Sector - cct.Indexes[0].FileMSF.Sector;
-                int totalPregapLength = specifiedPregapLength + impliedPregapLength;
+                var specifiedPregapLength = cct.PregapLength.Sector;
+                var impliedPregapLength = cct.Indexes[1].FileMSF.Sector - cct.Indexes[0].FileMSF.Sector;
+                var totalPregapLength = specifiedPregapLength + impliedPregapLength;
 
                 //from now on we'll track relative timestamp and increment it continually
-                int relMSF = -totalPregapLength;
+                var relMSF = -totalPregapLength;
 
                 //read more at policies declaration
                 //if (!context.DiscMountPolicy.CUE_PauseContradictionModeA)
@@ -211,8 +211,8 @@ namespace DiscTools.ISO.DiscFormats.CUE
                 curr_index = 0;
                 for (;;)
                 {
-                    bool trackDone = false;
-                    bool generateGap = false;
+                    var trackDone = false;
+                    var generateGap = false;
 
                     if (specifiedPregapLength > 0)
                     {
@@ -242,8 +242,8 @@ namespace DiscTools.ISO.DiscFormats.CUE
 
                     //select the track type for the subQ
                     //it's obviously the same as the main track type usually, but during a pregap it can be different
-                    TrackInfo qTrack = ti;
-                    int qRelMSF = relMSF;
+                    var qTrack = ti;
+                    var qRelMSF = relMSF;
                     if (curr_index == 0)
                     {
                         //tweak relMSF due to ambiguity/contradiction in yellowbook docs
@@ -273,7 +273,7 @@ namespace DiscTools.ISO.DiscFormats.CUE
                     }
                     else
                     {
-                        int sectorSize = int.MaxValue;
+                        var sectorSize = int.MaxValue;
                         switch (qTrack.CompiledCueTrack.TrackType)
                         {
                             case CueTrackType.Audio:
@@ -337,8 +337,8 @@ namespace DiscTools.ISO.DiscFormats.CUE
 
                 //---------------------------------
                 //gen postgap sectors
-                int specifiedPostgapLength = cct.PostgapLength.Sector;
-                for (int s = 0; s < specifiedPostgapLength; s++)
+                var specifiedPostgapLength = cct.PostgapLength.Sector;
+                for (var s = 0; s < specifiedPostgapLength; s++)
                 {
                     var ss = new SS_Gap();
                     ss.TrackType = cct.TrackType; //TODO - old track type in some < -150 cases?

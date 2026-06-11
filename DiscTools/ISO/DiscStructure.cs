@@ -77,7 +77,7 @@ namespace DiscTools.ISO
             {
                 var ses = this;
 
-                for (int i = 1; i < Tracks.Count; i++)
+                for (var i = 1; i < Tracks.Count; i++)
                 {
                     var track = ses.Tracks[i];
                     //funny logic here: if the current track's LBA is > the requested track number, it means the previous track is the one we wanted

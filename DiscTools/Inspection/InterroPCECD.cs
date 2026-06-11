@@ -18,7 +18,7 @@ namespace DiscTools.Inspection
         {
             currSector = di.ReadData(CurrentLBA, 2048);
 
-            string sS = System.Text.Encoding.Default.GetString(currSector);
+            var sS = System.Text.Encoding.Default.GetString(currSector);
 
             return GetPCECDData(sS);
         }
@@ -27,13 +27,13 @@ namespace DiscTools.Inspection
         {
             if (lbaString.ToLower().Contains("pc engine") && !lbaString.ToLower().Contains("pc-fx"))
             {
-                int ind = lbaString.IndexOf("PC Engine");
-                string d = lbaString.Substring(lbaString.IndexOf("PC Engine"));
+                var ind = lbaString.IndexOf("PC Engine");
+                var d = lbaString.Substring(lbaString.IndexOf("PC Engine"));
 
-                byte[] newData = System.Text.Encoding.ASCII.GetBytes(d);
+                var newData = System.Text.Encoding.ASCII.GetBytes(d);
 
-                byte[] dataSm1 = newData.Skip(74).Take(16).ToArray();
-                string t1 = System.Text.Encoding.Default.GetString(dataSm1).Replace('\0', ' ').Trim();
+                var dataSm1 = newData.Skip(74).Take(16).ToArray();
+                var t1 = System.Text.Encoding.Default.GetString(dataSm1).Replace('\0', ' ').Trim();
 
                 // get game name
                 if (t1.Trim() != "")

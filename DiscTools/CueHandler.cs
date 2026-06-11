@@ -23,7 +23,7 @@ namespace DiscTools
             if (res == null || res.DetectedDiscType == DetectedDiscType.UnknownFormat || res.DetectedDiscType == DetectedDiscType.UnknownCDFS)
             {
                 // try again after calling the cue parser
-                string newCue = CueHandler.ParseCue(cuePath);
+                var newCue = CueHandler.ParseCue(cuePath);
 
                 // if newcue is the same as cuepath return straight away
                 if (newCue == cuePath)
@@ -61,13 +61,13 @@ namespace DiscTools
             if (!cuePath.ToLower().EndsWith(".cue"))
                 return cuePath;
 
-            string newCueData = string.Empty;
+            var newCueData = string.Empty;
 
             // load cue into memory
-            string ca = File.ReadAllText(cuePath);
+            var ca = File.ReadAllText(cuePath);
 
             // split by FILE
-            string[] split = ca.Split(new string[] { "FILE " }, StringSplitOptions.None);
+            var split = ca.Split(new string[] { "FILE " }, StringSplitOptions.None);
 
             if (split.Length < 2)
                 split = ca.Split(new string[] { "File " }, StringSplitOptions.None);
@@ -76,7 +76,7 @@ namespace DiscTools
                 split = ca.Split(new string[] { "file " }, StringSplitOptions.None);
 
             // begin iteration - we only want BINARY entries
-            for (int i = 0; i < split.Length; i++)
+            for (var i = 0; i < split.Length; i++)
             {
                 if (split[i].ToUpper().Contains(" BINARY"))
                 {
@@ -86,9 +86,9 @@ namespace DiscTools
             }
 
             // write the new cuefile
-            string cueFolder = Path.GetDirectoryName(cuePath);
-            string oldCueNoExt = Path.GetFileNameWithoutExtension(cuePath);
-            string newCue = Path.Combine(cueFolder, oldCueNoExt + Guid.NewGuid().ToString() + ".cue");
+            var cueFolder = Path.GetDirectoryName(cuePath);
+            var oldCueNoExt = Path.GetFileNameWithoutExtension(cuePath);
+            var newCue = Path.Combine(cueFolder, oldCueNoExt + Guid.NewGuid().ToString() + ".cue");
 
             File.WriteAllText(newCue, newCueData);
 

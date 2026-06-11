@@ -21,9 +21,9 @@ namespace DiscTools.Inspection
 
         public bool GetDreamcastData()
         {
-            byte[] data = di.ReadData(CurrentLBA, 2048);
+            var data = di.ReadData(CurrentLBA, 2048);
             currSector = data;
-            string res = Encoding.Default.GetString(data);
+            var res = Encoding.Default.GetString(data);
 
             return GetDreamcastData(res);
         }

@@ -36,10 +36,10 @@ namespace DiscTools.Inspection
         
         public bool GetFMTownsData()
         {
-            byte[] data = di.GetPSXSerialNumber(CurrentLBA);
-            byte[] data32 = data.ToList().Take(200).ToArray();
+            var data = di.GetPSXSerialNumber(CurrentLBA);
+            var data32 = data.ToList().Take(200).ToArray();
 
-            string sS = System.Text.Encoding.Default.GetString(data32);
+            var sS = System.Text.Encoding.Default.GetString(data32);
 
             return GetFMTownsData(sS);
         }

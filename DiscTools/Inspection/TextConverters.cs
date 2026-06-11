@@ -17,7 +17,7 @@ namespace DiscTools.Inspection
                 return null;
             try
             {
-                DateTime dt = DateTime.ParseExact(dtString, "yyyyMMddHHmm", System.Globalization.CultureInfo.InvariantCulture);
+                var dt = DateTime.ParseExact(dtString, "yyyyMMddHHmm", System.Globalization.CultureInfo.InvariantCulture);
                 return dt;
             }
             catch

@@ -13,7 +13,7 @@ namespace DiscTools.Inspection
             if (discI.Data._ISOData.ApplicationIdentifier == "PLAYSTATION")
             {      
                 // store lba for SYSTEM.CNF
-                KeyValuePair<string, ISO.ISONode> cnf = discI.Data._ISOData.ISOFiles.Where(a => a.Key.Contains("SYSTEM.CNF")).FirstOrDefault();
+                var cnf = discI.Data._ISOData.ISOFiles.Where(a => a.Key.Contains("SYSTEM.CNF")).FirstOrDefault();
                 if (cnf.Key != null && cnf.Key.Contains("SYSTEM.CNF"))
                 {
                     ifn = cnf.Value;
@@ -30,30 +30,30 @@ namespace DiscTools.Inspection
 
                 // some jap discs (thunder storm and road blaster) appear not to even have a SYSTEM.CNF
                 // detect whether PSX.EXE exists, and if so try and parse this first
-                KeyValuePair<string, ISO.ISONode> psx = discI.Data._ISOData.ISOFiles.Where(a => a.Key.Contains("PSX.EXE")).FirstOrDefault();
+                var psx = discI.Data._ISOData.ISOFiles.Where(a => a.Key.Contains("PSX.EXE")).FirstOrDefault();
                 if (psx.Key != null && psx.Key.Contains("PSX.EXE"))
                 {
                     ifn = psx.Value;
                     CurrentLBA = Convert.ToInt32(ifn.Offset);
 
-                    byte[] data = di.ReadData(CurrentLBA, 2048);
-                    byte[] data32 = data.ToList().ToArray();
+                    var data = di.ReadData(CurrentLBA, 2048);
+                    var data32 = data.ToList().ToArray();
 
-                    string sS = System.Text.Encoding.Default.GetString(data32);
+                    var sS = System.Text.Encoding.Default.GetString(data32);
 
                     if (sS.Contains("Sony Computer Entertainment Inc. for Japan"))
                     {
                         // it is PSX - try and get the serial - may need to seek forward a bit
-                        for (int i = CurrentLBA; i < CurrentLBA + ifn.Length; i++)
+                        for (var i = CurrentLBA; i < CurrentLBA + ifn.Length; i++)
                         {
-                            byte[] d = di.ReadData(i, 2048);
-                            string s = System.Text.Encoding.Default.GetString(d);
+                            var d = di.ReadData(i, 2048);
+                            var s = System.Text.Encoding.Default.GetString(d);
 
                             if (s.ToUpper().Contains("SLPS"))
                             {
-                                int ind = s.IndexOf("SLPS");
-                                char[] serialChars = s.Substring(s.IndexOf("SLPS")).Take(10).ToArray();
-                                string serial = new string(serialChars).Trim();
+                                var ind = s.IndexOf("SLPS");
+                                var serialChars = s.Substring(s.IndexOf("SLPS")).Take(10).ToArray();
+                                var serial = new string(serialChars).Trim();
                                 discI.Data.SerialNumber = serial;
                                 discI.Data.GameTitle = discI.Data._ISOData.VolumeIdentifier;
                                 discI.Data.Publisher = discI.Data._ISOData.PublisherIdentifier;
@@ -76,10 +76,10 @@ namespace DiscTools.Inspection
         
         public bool GetPSXData()
         {
-            byte[] data = di.GetPSXSerialNumber(CurrentLBA);
-            byte[] data32 = data.ToList().ToArray();
+            var data = di.GetPSXSerialNumber(CurrentLBA);
+            var data32 = data.ToList().ToArray();
 
-            string sS = System.Text.Encoding.Default.GetString(data32);
+            var sS = System.Text.Encoding.Default.GetString(data32);
 
             return GetPSXData(sS);
         }
@@ -103,11 +103,11 @@ namespace DiscTools.Inspection
                 //  BOOT = cdrom:\TEKKEN3\SLUS_004.02;1 (extra path)
                 //  BOOT	= cdrom:\SLUS_010.41;1      (horizontal tab)
             */
-                string PSXSerialRegex = @"BOOT\s*=\s*?cdrom:\\?(.+\\)?(.+?(?=;|\s))";
+                var PSXSerialRegex = @"BOOT\s*=\s*?cdrom:\\?(.+\\)?(.+?(?=;|\s))";
 
-                Regex pattern = new Regex(PSXSerialRegex);
+                var pattern = new Regex(PSXSerialRegex);
                 var match = pattern.Match(lbaString);
-                int mCount = match.Groups.Count;
+                var mCount = match.Groups.Count;
 
                 if (mCount == 3)
                 {
@@ -128,11 +128,11 @@ namespace DiscTools.Inspection
             if (lbaString.Contains("BOOT2"))
             {
                 // PS2
-                string PS2SerialRegex = @"BOOT2\s*=\s*?cdrom0:\\?(.+\\)?(.+?(?=;|\s))";
+                var PS2SerialRegex = @"BOOT2\s*=\s*?cdrom0:\\?(.+\\)?(.+?(?=;|\s))";
 
-                Regex pattern = new Regex(PS2SerialRegex);
+                var pattern = new Regex(PS2SerialRegex);
                 var match = pattern.Match(lbaString);
-                int mCount = match.Groups.Count;
+                var mCount = match.Groups.Count;
 
                 if (mCount == 3)
                 {

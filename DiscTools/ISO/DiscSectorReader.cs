@@ -221,7 +221,7 @@ namespace DiscTools.ISO
                 sector.Synth(job);
 
                 //now the inspection, based on the mode
-                byte mode = buf2442[15];
+                var mode = buf2442[15];
                 if (mode == 1)
                 {
                     Buffer.BlockCopy(buf2442, 16, buffer, offset, 2048);
@@ -232,8 +232,8 @@ namespace DiscTools.ISO
                     //greenbook pg II-22
                     //we're going to do a sanity check here.. we're not sure what happens if we try to read 2048 bytes from a form-2 2324 byte sector
                     //we could handle it by policy but for now the policy is exception
-                    byte submodeByte = buf2442[18];
-                    int form = ((submodeByte >> 5) & 1) + 1;
+                    var submodeByte = buf2442[18];
+                    var form = ((submodeByte >> 5) & 1) + 1;
                     if (form == 2)
                     {
                         if (Policy.ThrowExceptions2048)
@@ -280,8 +280,8 @@ namespace DiscTools.ISO
             sq.ap_frame.BCDValue = buf12[9];
 
             //CRC is stored inverted and big endian.. so... do the opposite
-            byte hibyte = (byte)(~buf12[10]);
-            byte lobyte = (byte)(~buf12[11]);
+            var hibyte = (byte)(~buf12[10]);
+            var lobyte = (byte)(~buf12[11]);
             sq.q_crc = (ushort)((hibyte << 8) | lobyte);
         }
 

@@ -94,13 +94,13 @@ namespace DiscTools.ISO
 
         static void CheckLibrary()
         {
-            IntPtr lib = LoadLibrary("mednadisc.dll");
+            var lib = LoadLibrary("mednadisc.dll");
             if (lib == IntPtr.Zero)
             {
                 _IsLibraryAvailable = false;
                 return;
             }
-            IntPtr addr = GetProcAddress(lib, "mednadisc_LoadCD");
+            var addr = GetProcAddress(lib, "mednadisc_LoadCD");
             FreeLibrary(lib);
             if (addr == IntPtr.Zero)
             {

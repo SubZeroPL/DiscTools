@@ -10,7 +10,7 @@ namespace DiscTools.ISO.DiscFormats
     {
         public static M3U_File Read(StreamReader sr)
         {
-            M3U_File ret = new M3U_File();
+            var ret = new M3U_File();
             if (!ret.Parse(sr))
                 return null;
             else return ret;
@@ -18,12 +18,12 @@ namespace DiscTools.ISO.DiscFormats
 
         bool Parse(StreamReader sr)
         {
-            bool ext = false;
-            int runtime = -1;
+            var ext = false;
+            var runtime = -1;
             string title = null;
             for (;;)
             {
-                string line = sr.ReadLine();
+                var line = sr.ReadLine();
                 if (line == null)
                     break;
                 if (line.StartsWith("#"))
@@ -39,7 +39,7 @@ namespace DiscTools.ISO.DiscFormats
                         if (!ext) continue;
 
                         line = line.Substring(8);
-                        int cidx = line.IndexOf(',');
+                        var cidx = line.IndexOf(',');
 
                         //dont know what to do with this, but its a comment, so ignore it
                         if (cidx == -1)

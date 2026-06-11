@@ -39,7 +39,7 @@ namespace DiscTools.ISO.Internal.Jobs
             //NOTE: entries are inserted at the beginning due to observations of CCD indicating they might need to be that way
             //Since I'm being asked to synthesize them here, I guess I can put them in whatever order I want, can't I?
 
-            SubchannelQ sq = new SubchannelQ();
+            var sq = new SubchannelQ();
 
             //ADR (q-Mode) is necessarily 0x01 for a RawTOCEntry
             const int kADR = 1;

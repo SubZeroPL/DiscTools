@@ -25,22 +25,22 @@ namespace DiscTools.ISO
         void RunMednaDisc()
         {
             var disc = new Disc();
-            OUT_Disc = disc;
+            OutDisc = disc;
 
             //create a MednaDisc and give it to the disc for ownership
-            var md = new MednaDisc(IN_FromPath);
+            var md = new MednaDisc(InFromPath);
             disc.DisposableResources.Add(md);
 
             //"length of disc" for bizhawk's purposes (NOT a robust concept!) is determined by beginning of leadout track
             var m_leadoutTrack = md.TOCTracks[100];
-            int nSectors = (int)m_leadoutTrack.lba;
+            var nSectors = (int)m_leadoutTrack.lba;
 
             //make synth param memos
             disc.SynthParams.MednaDisc = md;
 
             //this is the sole sector synthesizer we'll need
             var synth = new SS_MednaDisc();
-            OUT_Disc.SynthProvider = new SimpleSectorSynthProvider() { SS = synth };
+            OutDisc.SynthProvider = new SimpleSectorSynthProvider() { SS = synth };
 
             //ADR (q-Mode) is necessarily 0x01 for a RawTOCEntry
             const int kADR = 1;
@@ -52,7 +52,7 @@ namespace DiscTools.ISO
             //entry[0] is placeholder junk, not to be used
             //entry[100] is the leadout track (A0)
             //A1 and A2 are in the form of FirstRecordedTrackNumber and LastRecordedTrackNumber
-            for (int i = 1; i < 101; i++)
+            for (var i = 1; i < 101; i++)
             {
                 var m_te = md.TOCTracks[i];
 

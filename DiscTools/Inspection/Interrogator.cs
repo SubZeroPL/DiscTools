@@ -107,7 +107,7 @@ namespace DiscTools.Inspection
 
             foreach (var t in disc.Structure.Sessions.Where(a => a != null))
             {
-                for (int i = 0; i < t.Tracks.Count(); i++)
+                for (var i = 0; i < t.Tracks.Count(); i++)
                 {
                     if (t.Tracks[i].IsData)
                     {
@@ -164,8 +164,8 @@ namespace DiscTools.Inspection
         {
             var data = ReadSectorCached(lba);
             if (data == null) return false;
-            byte[] cmp = Encoding.ASCII.GetBytes(s);
-            byte[] cmp2 = new byte[cmp.Length];
+            var cmp = Encoding.ASCII.GetBytes(s);
+            var cmp2 = new byte[cmp.Length];
             Buffer.BlockCopy(data, n, cmp2, 0, cmp.Length);
             return cmp.SequenceEqual(cmp2);
         }

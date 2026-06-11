@@ -19,7 +19,7 @@ namespace DiscTools.Inspection
         {
             currSector = di.ReadData(CurrentLBA, 2048);
 
-            string sS = System.Text.Encoding.Default.GetString(currSector);
+            var sS = System.Text.Encoding.Default.GetString(currSector);
 
             return GetCDiData(sS);
         }
@@ -28,17 +28,17 @@ namespace DiscTools.Inspection
         {
             if (lbaString.ToLower().Contains("cd-rtos"))
             {
-                CDiVolumeDescriptor cdv = new CDiVolumeDescriptor(currSector);
+                var cdv = new CDiVolumeDescriptor(currSector);
 
                 discI.Data.ManufacturerID = System.Text.Encoding.Default.GetString(currSector.ToList().Skip(1).Take(4).ToArray());
                 discI.Data.OtherData = System.Text.Encoding.Default.GetString(currSector.ToList().Skip(8).Take(16).ToArray()).Trim();
-                int start = 190;
-                int block = 128;
+                var start = 190;
+                var block = 128;
 
-                List<string> header = new List<string>();
-                for (int a = 0; a < 10; a++)
+                var header = new List<string>();
+                for (var a = 0; a < 10; a++)
                 {
-                    string test = System.Text.Encoding.Default.GetString(currSector.ToList().Skip(start + (a * block)).Take(block).ToArray());
+                    var test = System.Text.Encoding.Default.GetString(currSector.ToList().Skip(start + (a * block)).Take(block).ToArray());
                     header.Add(test);
                 }
 

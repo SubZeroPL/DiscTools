@@ -23,13 +23,13 @@ namespace DiscTools.ISO
 
         private static void MakeByte8()
         {
-            int bits = 8;
+            var bits = 8;
             const int n = 1 << 8;
             Byte8 = new byte[n];
 
-            int m = 1;
-            int a = n >> 1;
-            int j = 2;
+            var m = 1;
+            var a = n >> 1;
+            var j = 2;
 
             Byte8[0] = 0;
             Byte8[1] = (byte)a;
@@ -38,7 +38,7 @@ namespace DiscTools.ISO
             {
                 m <<= 1;
                 a >>= 1;
-                for (int i = 0; i < m; i++)
+                for (var i = 0; i < m; i++)
                 {
                     Byte8[j++] = (byte)(Byte8[i] + a);
                 }

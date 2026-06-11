@@ -26,8 +26,8 @@ namespace DiscTools.ISO
             //
             //a possibly special CRC32 is used to help us match redump's DB elsewhere
 
-            SpecialCRC32 crc = new SpecialCRC32();
-            byte[] buffer2352 = new byte[2352];
+            var crc = new SpecialCRC32();
+            var buffer2352 = new byte[2352];
 
             var dsr = new DiscSectorReader(disc);
             dsr.Policy.DeterministicClearBuffer = false; //live dangerously
@@ -36,7 +36,7 @@ namespace DiscTools.ISO
             crc.Add((int)disc.TOC.Session1Format);
             crc.Add(disc.TOC.FirstRecordedTrackNumber);
             crc.Add(disc.TOC.LastRecordedTrackNumber);
-            for (int i = 1; i <= 100; i++)
+            for (var i = 1; i <= 100; i++)
             {
                 //if (disc.TOC.TOCItems[i].Exists) Console.WriteLine("{0:X8} {1:X2} {2:X2} {3:X8}", crc.Current, (int)disc.TOC.TOCItems[i].Control, disc.TOC.TOCItems[i].Exists ? 1 : 0, disc.TOC.TOCItems[i].LBATimestamp.Sector); //a little debugging
                 crc.Add((int)disc.TOC.TOCItems[i].Control);
@@ -45,7 +45,7 @@ namespace DiscTools.ISO
             }
 
             //hash first 26 sectors
-            for (int i = 0; i < 26; i++)
+            for (var i = 0; i < 26; i++)
             {
                 dsr.ReadLBA_2352(i, buffer2352, 0);
                 crc.Add(buffer2352, 0, 2352);
@@ -60,14 +60,14 @@ namespace DiscTools.ISO
         public uint Calculate_PSX_RedumpHash()
         {
             //a special CRC32 is used to help us match redump's DB
-            SpecialCRC32 crc = new SpecialCRC32();
-            byte[] buffer2352 = new byte[2352];
+            var crc = new SpecialCRC32();
+            var buffer2352 = new byte[2352];
 
             var dsr = new DiscSectorReader(disc);
             dsr.Policy.DeterministicClearBuffer = false; //live dangerously
 
             //read all sectors for redump hash
-            for (int i = 0; i < disc.Session1.LeadoutLBA; i++)
+            for (var i = 0; i < disc.Session1.LeadoutLBA; i++)
             {
                 dsr.ReadLBA_2352(i, buffer2352, 0);
                 crc.Add(buffer2352, 0, 2352);
@@ -81,15 +81,15 @@ namespace DiscTools.ISO
         //TODO - this is a very platform-specific thing. hashing the TOC may be faster and be just as effective. so, rename it appropriately
         public string OldHash()
         {
-            byte[] buffer = new byte[512 * 2352];
-            DiscSectorReader dsr = new DiscSectorReader(disc);
+            var buffer = new byte[512 * 2352];
+            var dsr = new DiscSectorReader(disc);
             foreach (var track in disc.Session1.Tracks)
             {
                 if (track.IsAudio)
                     continue;
 
-                int lba_len = Math.Min(track.NextTrack.LBA, 512);
-                for (int s = 0; s < 512 && s < lba_len; s++)
+                var lba_len = Math.Min(track.NextTrack.LBA, 512);
+                for (var s = 0; s < 512 && s < lba_len; s++)
                     dsr.ReadLBA_2352(track.LBA + s, buffer, s * 2352);
 
                 return buffer.HashMD5(0, lba_len * 2352);
@@ -110,8 +110,8 @@ namespace DiscTools.ISO
                 CRC32Table = new uint[256];
                 for (uint i = 0; i < 256; ++i)
                 {
-                    uint crc = i;
-                    for (int j = 8; j > 0; --j)
+                    var crc = i;
+                    for (var j = 8; j > 0; --j)
                     {
                         if ((crc & 1) == 1)
                             crc = ((crc >> 1) ^ 0xEDB88320);
@@ -130,9 +130,9 @@ namespace DiscTools.ISO
                 if (offset < 0)
                     throw new ArgumentOutOfRangeException();
                 fixed (byte* pData = data)
-                    for (int i = 0; i < size; i++)
+                    for (var i = 0; i < size; i++)
                     {
-                        byte b = pData[offset + i];
+                        var b = pData[offset + i];
                         current = CRC32Table[(current ^ b) & 0xFF] ^ (current >> 8);
                     }
             }
@@ -159,7 +159,7 @@ namespace DiscTools.ISO
 
             uint gf2_matrix_times(uint[] mat, uint vec)
             {
-                int matIdx = 0;
+                var matIdx = 0;
                 uint sum = 0;
                 while (vec != 0)
                 {
@@ -203,7 +203,7 @@ namespace DiscTools.ISO
                 // put operator for one zero bit in odd
                 odd[0] = 0xedb88320;           //CRC-32 polynomial
                 uint row = 1;
-                for (int n = 1; n < 32; n++)
+                for (var n = 1; n < 32; n++)
                 {
                     odd[n] = row;
                     row <<= 1;

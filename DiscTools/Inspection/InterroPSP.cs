@@ -16,14 +16,14 @@ namespace DiscTools.Inspection
         /// <returns></returns>
         public bool ScanISOPSP()
         {
-            bool isPSP = false;
+            var isPSP = false;
 
             // check app ident
             if (discI.Data._ISOData.ApplicationIdentifier == "PSP GAME")
                 isPSP = true;
 
             // try and get data from RESERVED volume descriptor field
-            string[] reserved = discI.Data._ISOData.Reserved.Split('|');
+            var reserved = discI.Data._ISOData.Reserved.Split('|');
             if (reserved.Length > 1)
             {
                 discI.Data.SerialNumber = reserved[0];
@@ -31,7 +31,7 @@ namespace DiscTools.Inspection
             }
 
             // check for existance of PSP_GAME folder
-            ISO.ISODirectoryNode cnf = discI.Data._ISOData.ISOFiles.Where(a => a.Key == "PSP_GAME").FirstOrDefault().Value as ISO.ISODirectoryNode;
+            var cnf = discI.Data._ISOData.ISOFiles.Where(a => a.Key == "PSP_GAME").FirstOrDefault().Value as ISO.ISODirectoryNode;
             if (cnf == null)
                 return false;
             isPSP = true;
@@ -43,8 +43,8 @@ namespace DiscTools.Inspection
                 ifn = umd.Value;
                 CurrentLBA = Convert.ToInt32(ifn.Offset);
                 currSector = di.ReadData(CurrentLBA, 2048);
-                string umdStr = Encoding.Default.GetString(currSector);
-                string[] umdArr = umdStr.Split('|');
+                var umdStr = Encoding.Default.GetString(currSector);
+                var umdArr = umdStr.Split('|');
                 if (umdArr.Length > 1)
                 {
                     discI.Data.SerialNumber = umdArr[0];
@@ -59,7 +59,7 @@ namespace DiscTools.Inspection
                 ifn = param.Value;
                 CurrentLBA = Convert.ToInt32(ifn.Offset);
                 currSector = di.ReadData(CurrentLBA, 2048);
-                SFO sfo = new SFO(currSector);
+                var sfo = new SFO(currSector);
                 PSPData.ParsePSPData(discI, sfo);
             }
 

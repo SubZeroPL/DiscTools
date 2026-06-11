@@ -173,12 +173,12 @@ namespace DiscTools.ISO.DiscFormats
 
         List<CCDSection> ParseSections(Stream stream)
         {
-            List<CCDSection> sections = new List<CCDSection>();
+            var sections = new List<CCDSection>();
 
             //TODO - do we need to attempt to parse out the version tag in a first pass?
             //im doing this from a version 3 example
 
-            StreamReader sr = new StreamReader(stream);
+            var sr = new StreamReader(stream);
             CCDSection currSection = null;
             for (;;)
             {
@@ -224,7 +224,7 @@ namespace DiscTools.ISO.DiscFormats
             if (sections[1].Name != "DISC")
                 throw new CCDParseException("Malformed CCD format: section[1] isn't [Disc]");
 
-            int version = ccdSection["VERSION"];
+            var version = ccdSection["VERSION"];
 
             return version;
         }
@@ -234,26 +234,26 @@ namespace DiscTools.ISO.DiscFormats
         /// </summary>
         public CCDFile ParseFrom(Stream stream)
         {
-            CCDFile ccdf = new CCDFile();
+            var ccdf = new CCDFile();
 
             var sections = ParseSections(stream);
             ccdf.Version = PreParseIntegrityCheck(sections);
 
             var discSection = sections[1];
-            int nTocEntries = discSection["TOCENTRIES"]; //its conceivable that this could be missing
-            int nSessions = discSection["SESSIONS"]; //its conceivable that this could be missing
+            var nTocEntries = discSection["TOCENTRIES"]; //its conceivable that this could be missing
+            var nSessions = discSection["SESSIONS"]; //its conceivable that this could be missing
             ccdf.DataTracksScrambled = discSection.FetchOrDefault(0, "DATATRACKSSCRAMBLED");
             ccdf.CDTextLength = discSection.FetchOrDefault(0, "CDTEXTLENGTH");
 
             if (ccdf.DataTracksScrambled == 1) throw new CCDParseException("Malformed CCD format: DataTracksScrambled=1 not supported. Please report this, so we can understand what it means.");
 
-            for (int i = 2; i < sections.Count; i++)
+            for (var i = 2; i < sections.Count; i++)
             {
                 var section = sections[i];
                 if (section.Name.StartsWith("SESSION"))
                 {
-                    int sesnum = int.Parse(section.Name.Split(' ')[1]);
-                    CCDSession session = new CCDSession(sesnum);
+                    var sesnum = int.Parse(section.Name.Split(' ')[1]);
+                    var session = new CCDSession(sesnum);
                     ccdf.Sessions.Add(session);
                     if (sesnum != ccdf.Sessions.Count)
                         throw new CCDParseException("Malformed CCD format: wrong session number in sequence");
@@ -262,8 +262,8 @@ namespace DiscTools.ISO.DiscFormats
                 }
                 else if (section.Name.StartsWith("ENTRY"))
                 {
-                    int entryNum = int.Parse(section.Name.Split(' ')[1]);
-                    CCDTocEntry entry = new CCDTocEntry(entryNum);
+                    var entryNum = int.Parse(section.Name.Split(' ')[1]);
+                    var entry = new CCDTocEntry(entryNum);
                     ccdf.TOCEntries.Add(entry);
 
                     entry.Session = section.FetchOrFail("SESSION");
@@ -292,8 +292,8 @@ namespace DiscTools.ISO.DiscFormats
                 }
                 else if (section.Name.StartsWith("TRACK"))
                 {
-                    int entryNum = int.Parse(section.Name.Split(' ')[1]);
-                    CCDTrack track = new CCDTrack(entryNum);
+                    var entryNum = int.Parse(section.Name.Split(' ')[1]);
+                    var track = new CCDTrack(entryNum);
                     ccdf.Tracks.Add(track);
                     ccdf.TracksByNumber[entryNum] = track;
                     foreach (var kvp in section)
@@ -302,7 +302,7 @@ namespace DiscTools.ISO.DiscFormats
                             track.Mode = kvp.Value;
                         if (kvp.Key.StartsWith("INDEX"))
                         {
-                            int inum = int.Parse(kvp.Key.Split(' ')[1]);
+                            var inum = int.Parse(kvp.Key.Split(' ')[1]);
                             track.Indexes[inum] = kvp.Value;
                         }
                     }
@@ -325,7 +325,7 @@ namespace DiscTools.ISO.DiscFormats
 
         public static LoadResults LoadCCDPath(string path)
         {
-            LoadResults ret = new LoadResults();
+            var ret = new LoadResults();
             ret.CcdPath = path;
             ret.ImgPath = Path.ChangeExtension(path, ".img");
             ret.SubPath = Path.ChangeExtension(path, ".sub");
@@ -369,12 +369,12 @@ namespace DiscTools.ISO.DiscFormats
                 sw.WriteLine("PreGapMode=2");
                 sw.WriteLine("PreGapSubC=1");
                 sw.WriteLine();
-                for (int i = 0; i < disc.RawTOCEntries.Count; i++)
+                for (var i = 0; i < disc.RawTOCEntries.Count; i++)
                 {
                     var entry = disc.RawTOCEntries[i];
 
                     //ehhh something's wrong with how I track these
-                    int point = entry.QData.q_index.DecimalValue;
+                    var point = entry.QData.q_index.DecimalValue;
                     if (point == 100) point = 0xA0;
                     if (point == 101) point = 0xA1;
                     if (point == 102) point = 0xA2;
@@ -401,7 +401,7 @@ namespace DiscTools.ISO.DiscFormats
                 //but in order to make a high quality CCD which can be inspected by various other tools, we need it
                 //now, regarding the indexes.. theyre truly useless. having indexes written out with the tracks is bad news.
                 //index information is only truly stored in subQ
-                for (int tnum = 1; tnum <= disc.Session1.LastInformationTrack.Number; tnum++)
+                for (var tnum = 1; tnum <= disc.Session1.LastInformationTrack.Number; tnum++)
                 {
                     var track = disc.Session1.Tracks[tnum];
                     sw.WriteLine("[TRACK {0}]", track.Number);
@@ -415,17 +415,17 @@ namespace DiscTools.ISO.DiscFormats
             //TODO - actually re-add
             //dump the img and sub
             //TODO - acquire disk size first
-            string imgPath = Path.ChangeExtension(path, ".img");
-            string subPath = Path.ChangeExtension(path, ".sub");
+            var imgPath = Path.ChangeExtension(path, ".img");
+            var subPath = Path.ChangeExtension(path, ".sub");
             var buf2448 = new byte[2448];
-            DiscSectorReader dsr = new DiscSectorReader(disc);
+            var dsr = new DiscSectorReader(disc);
 
             using (var imgFile = File.OpenWrite(imgPath))
             using (var subFile = File.OpenWrite(subPath))
             {
 
-                int nLBA = disc.Session1.LeadoutLBA;
-                for (int lba = 0; lba < nLBA; lba++)
+                var nLBA = disc.Session1.LeadoutLBA;
+                for (var lba = 0; lba < nLBA; lba++)
                 {
                     dsr.ReadLBA_2448(lba, buf2448, 0);
                     imgFile.Write(buf2448, 0, 2352);
@@ -477,7 +477,7 @@ namespace DiscTools.ISO.DiscFormats
                 return null;
                 //throw loadResults.FailureException;
 
-            Disc disc = new Disc();
+            var disc = new Disc();
 
             IBlob imgBlob = null, subBlob = null;
             long imgLen = -1, subLen;
@@ -517,13 +517,13 @@ namespace DiscTools.ISO.DiscFormats
 
             //quick integrity check of file sizes
             if (imgLen % 2352 != 0) throw new CCDParseException("Malformed CCD format: IMG file length not multiple of 2352");
-            int NumImgSectors = (int)(imgLen / 2352);
+            var NumImgSectors = (int)(imgLen / 2352);
             if (subLen != NumImgSectors * 96) throw new CCDParseException("Malformed CCD format: SUB file length not matching IMG");
 
             var ccdf = loadResults.ParsedCCDFile;
 
             //the only instance of a sector synthesizer we'll need
-            SS_CCD synth = new SS_CCD();
+            var synth = new SS_CCD();
 
             //generate DiscTOCRaw items from the ones specified in the CCD file
             //TODO - range validate these (too many truncations to byte)
@@ -570,7 +570,7 @@ namespace DiscTools.ISO.DiscFormats
             //We reuse some CUE code for this.
             //If we load other formats later we might should abstract this even further (to a synthesizer job)
             //It can't really be abstracted from cue files though due to the necessity of merging this with other track 1 pregaps
-            CUE.CueTrackType pregapTrackType = CUE.CueTrackType.Audio;
+            var pregapTrackType = CUE.CueTrackType.Audio;
             if (tocSynth.Result.TOCItems[1].IsData)
             {
                 if (tocSynth.Result.Session1Format == SessionFormat.Type20_CDXA)
@@ -580,7 +580,7 @@ namespace DiscTools.ISO.DiscFormats
                 else if (tocSynth.Result.Session1Format == SessionFormat.Type00_CDROM_CDDA)
                     pregapTrackType = CUE.CueTrackType.Mode1_2352;
             }
-            for (int i = 0; i < 150; i++)
+            for (var i = 0; i < 150; i++)
             {
                 var ss_gap = new CUE.SS_Gap()
                 {
@@ -589,7 +589,7 @@ namespace DiscTools.ISO.DiscFormats
                 };
                 disc._Sectors.Add(ss_gap);
 
-                int qRelMSF = i - 150;
+                var qRelMSF = i - 150;
 
                 //tweak relMSF due to ambiguity/contradiction in yellowbook docs
                 if (!IN_DiscMountPolicy.CUE_PregapContradictionModeA)
@@ -610,7 +610,7 @@ namespace DiscTools.ISO.DiscFormats
             //build the sectors:
             //set up as many sectors as we have img/sub for, even if the TOC doesnt reference them
             //(the TOC is unreliable, and the Track records are redundant)
-            for (int i = 0; i < NumImgSectors; i++)
+            for (var i = 0; i < NumImgSectors; i++)
             {
                 disc._Sectors.Add(synth);
             }

@@ -32,18 +32,18 @@ namespace DiscTools.Inspection
         {
             currSector = di.ReadData(CurrentLBA, 2048);
 
-            string sS = System.Text.Encoding.Default.GetString(currSector);
+            var sS = System.Text.Encoding.Default.GetString(currSector);
 
             return GetSegaCDData(sS);
         }
 
         public bool GetSegaCDData(string lbaString)
         {
-            List<string> header = new List<string>();
+            var header = new List<string>();
 
-            for (int i = 0; i < 100; i++)
+            for (var i = 0; i < 100; i++)
             {
-                string l = System.Text.Encoding.ASCII.GetString(currSector.ToList().Skip(i * 16).Take(16).ToArray());
+                var l = System.Text.Encoding.ASCII.GetString(currSector.ToList().Skip(i * 16).Take(16).ToArray());
                 header.Add(l);
             }
 

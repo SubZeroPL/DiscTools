@@ -13,28 +13,28 @@ namespace DiscTools.OtherFormats
             if (!File.Exists(di.CuePath))
                 return null;
 
-            using (FileStream stream = File.Open(di.CuePath, FileMode.Open))
+            using (var stream = File.Open(di.CuePath, FileMode.Open))
             {
                 // try and detect dreamcast
-                long headerPos = GetHeaderOffset(stream);
+                var headerPos = GetHeaderOffset(stream);
                 stream.Seek(headerPos, SeekOrigin.Begin);
-                byte[] buffer = new byte[0x100];
-                byte[] detection = new byte[0x10];
+                var buffer = new byte[0x100];
+                var detection = new byte[0x10];
                 stream.Read(buffer, 0, buffer.Length);
                 Array.Copy(buffer, 0x0, detection, 0, detection.Length);
-                string detStr = (Encoding.UTF8.GetString(detection));
+                var detStr = (Encoding.UTF8.GetString(detection));
 
                 // internal name
                 stream.Seek(headerPos, SeekOrigin.Begin);
                 buffer = new byte[0x100];
-                byte[] internalName = new byte[0x80];
+                var internalName = new byte[0x80];
                 stream.Read(buffer, 0, buffer.Length);
                 Array.Copy(buffer, 0x80, internalName, 0, internalName.Length);
-                string intName = (Encoding.UTF8.GetString(internalName));
+                var intName = (Encoding.UTF8.GetString(internalName));
 
-                string buffStr = (Encoding.UTF8.GetString(buffer));
+                var buffStr = (Encoding.UTF8.GetString(buffer));
 
-                byte[] data = new byte[0x9];
+                var data = new byte[0x9];
                 stream.Read(buffer, 0, buffer.Length);
                 Array.Copy(buffer, 0x40, data, 0, data.Length);
                 /*
@@ -46,7 +46,7 @@ namespace DiscTools.OtherFormats
                 
 
 
-                string res = (Encoding.UTF8.GetString(data));
+                var res = (Encoding.UTF8.GetString(data));
 
                 return di;
             }
@@ -54,21 +54,21 @@ namespace DiscTools.OtherFormats
 
         private static long GetHeaderOffset(Stream stream)
         {
-            byte[] header = new byte[] { 0x53, 0x45, 0x47, 0x41, 0x20, 0x53, 0x45, 0x47, 0x41, 0x4B, 0x41, 0x54, 0x41, 0x4E, 0x41 };
-            byte[] buffer = new byte[1024 * 1024]; //read a MiB at a time
+            var header = new byte[] { 0x53, 0x45, 0x47, 0x41, 0x20, 0x53, 0x45, 0x47, 0x41, 0x4B, 0x41, 0x54, 0x41, 0x4E, 0x41 };
+            var buffer = new byte[1024 * 1024]; //read a MiB at a time
 
 
-            for (int i = 1; i < stream.Length / 1024; i++)
+            for (var i = 1; i < stream.Length / 1024; i++)
             {
-                long streamPos = (stream.Length - (i * buffer.Length));
+                var streamPos = (stream.Length - (i * buffer.Length));
                 if (streamPos < 0) break;
                 stream.Position = streamPos;
                 stream.Read(buffer, 0, buffer.Length);
                 var index = IndexOfSequence(buffer, header, 0);
                 if (index.Count > 0)
                 {
-                    int bufferIndex = index[0];
-                    long streamIndex = streamPos + bufferIndex;
+                    var bufferIndex = index[0];
+                    var streamIndex = streamPos + bufferIndex;
                     return streamIndex;
                 }
             }
@@ -77,11 +77,11 @@ namespace DiscTools.OtherFormats
         //adapted from http://stackoverflow.com/posts/332667
         public static List<int> IndexOfSequence(byte[] buffer, byte[] pattern, int startIndex)
         {
-            List<int> positions = new List<int>();
-            int i = Array.IndexOf<byte>(buffer, pattern[0], startIndex);
+            var positions = new List<int>();
+            var i = Array.IndexOf<byte>(buffer, pattern[0], startIndex);
             while (i >= 0 && i <= buffer.Length - pattern.Length)
             {
-                byte[] segment = new byte[pattern.Length];
+                var segment = new byte[pattern.Length];
                 Buffer.BlockCopy(buffer, i, segment, 0, pattern.Length);
                 if (segment.SequenceEqual<byte>(pattern))
                     positions.Add(i);

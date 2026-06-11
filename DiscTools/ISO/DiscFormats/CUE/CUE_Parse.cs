@@ -41,8 +41,8 @@ namespace DiscTools.ISO.DiscFormats.CUE
             public string ReadToken() { return ReadToken(Mode.Normal); }
             public string ReadLine()
             {
-                int len = str.Length;
-                string ret = str.Substring(index, len - index);
+                var len = str.Length;
+                var ret = str.Substring(index, len - index);
                 index = len;
                 EOF = true;
                 return ret;
@@ -57,16 +57,16 @@ namespace DiscTools.ISO.DiscFormats.CUE
             {
                 if (EOF) return null;
 
-                bool isPath = mode == Mode.Quotable;
+                var isPath = mode == Mode.Quotable;
 
-                int startIndex = index;
-                bool inToken = false;
-                bool inQuote = false;
+                var startIndex = index;
+                var inToken = false;
+                var inQuote = false;
                 for (;;)
                 {
-                    bool done = false;
-                    char c = str[index];
-                    bool isWhiteSpace = (c == ' ' || c == '\t');
+                    var done = false;
+                    var c = str[index];
+                    var isWhiteSpace = (c == ' ' || c == '\t');
 
                     if (isWhiteSpace)
                     {
@@ -82,7 +82,7 @@ namespace DiscTools.ISO.DiscFormats.CUE
                     }
                     else
                     {
-                        bool startedQuote = false;
+                        var startedQuote = false;
                         if (!inToken)
                         {
                             startIndex = index;
@@ -116,7 +116,7 @@ namespace DiscTools.ISO.DiscFormats.CUE
                     if (done) break;
                 }
 
-                string ret = str.Substring(startIndex, index - startIndex);
+                var ret = str.Substring(startIndex, index - startIndex);
 
                 if (mode == Mode.Quotable)
                     ret = ret.Trim('"');
@@ -127,33 +127,33 @@ namespace DiscTools.ISO.DiscFormats.CUE
 
         void LoadFromString(ParseCueJob job)
         {
-            string cueString = job.IN_CueString;
+            var cueString = job.IN_CueString;
             TextReader tr = new StringReader(cueString);
 
             for (;;)
             {
                 job.CurrentLine++;
-                string line = tr.ReadLine();
+                var line = tr.ReadLine();
                 if (line == null) break;
                 line = line.Trim();
                 if (line == "") continue;
                 var clp = new CueLineParser(line);
 
-                string key = clp.ReadToken().ToUpperInvariant();
+                var key = clp.ReadToken().ToUpperInvariant();
 
                 //remove nonsense at beginning
                 if (!IN_Strict)
                 {
                     while (key.Length > 0)
                     {
-                        char c = key[0];
+                        var c = key[0];
                         if (c == ';') break;
                         if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) break;
                         key = key.Substring(1);
                     }
                 }
 
-                bool startsWithSemicolon = key.StartsWith(";");
+                var startsWithSemicolon = key.StartsWith(";");
 
                 if (startsWithSemicolon)
                 {
@@ -242,14 +242,14 @@ namespace DiscTools.ISO.DiscFormats.CUE
                                     job.Error("Incomplete INDEX command");
                                     break;
                                 }
-                                string strindexnum = clp.ReadToken();
+                                var strindexnum = clp.ReadToken();
                                 int indexnum;
                                 if (!int.TryParse(strindexnum, out indexnum) || indexnum < 0 || indexnum > 99)
                                 {
                                     job.Error("Invalid INDEX number: " + strindexnum);
                                     break;
                                 }
-                                string str_timestamp = clp.ReadToken();
+                                var str_timestamp = clp.ReadToken();
                                 var ts = new Timestamp(str_timestamp);
                                 if (!ts.Valid && !IN_Strict)
                                 {
@@ -324,7 +324,7 @@ namespace DiscTools.ISO.DiscFormats.CUE
                                     job.Error("Incomplete TRACK command");
                                     break;
                                 }
-                                string str_tracknum = clp.ReadToken();
+                                var str_tracknum = clp.ReadToken();
                                 int tracknum;
                                 if (!int.TryParse(str_tracknum, out tracknum) || tracknum < 1 || tracknum > 99)
                                 {

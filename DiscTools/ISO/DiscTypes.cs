@@ -70,7 +70,7 @@ namespace DiscTools.ISO
         public static byte IntToBCD(int n)
         {
             int ones;
-            int tens = Math.DivRem(n, 10, out ones);
+            var tens = Math.DivRem(n, 10, out ones);
             return (byte)((tens << 4) | ones);
         }
 

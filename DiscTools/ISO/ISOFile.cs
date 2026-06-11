@@ -72,8 +72,8 @@ namespace DiscTools.ISO
             this.VolumeDescriptors = new List<ISOVolumeDescriptor>();
             Root = null;
 
-            long startPosition = s.Position;
-            byte[] buffer = new byte[ISOFile.SECTOR_SIZE];
+            var startPosition = s.Position;
+            var buffer = new byte[ISOFile.SECTOR_SIZE];
 
             // Seek through the first volume descriptor
             s.Seek(startPosition + (SECTOR_SIZE * startSector), SeekOrigin.Begin);
@@ -83,8 +83,8 @@ namespace DiscTools.ISO
             {
                 //zero 24-jun-2013 - improved validity checks
 
-                ISOVolumeDescriptor desc = new ISOVolumeDescriptor();
-                bool isValid = desc.Parse(s);
+                var desc = new ISOVolumeDescriptor();
+                var isValid = desc.Parse(s);
                 if (!isValid) return false;
 
                 if (desc.IsTerminator())
@@ -112,7 +112,7 @@ namespace DiscTools.ISO
             // Visit all the directories and get the offset of each directory/file
 
             // We need to keep track of the directories and files we have visited in case there are loops.
-            Dictionary<long, ISONode> visitedNodes = new Dictionary<long, ISONode>();
+            var visitedNodes = new Dictionary<long, ISONode>();
 
             // Create (and visit) the root node
             this.Root = new ISODirectoryNode(this.VolumeDescriptors[0].RootDirectoryRecord);

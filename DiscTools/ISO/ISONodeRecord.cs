@@ -146,7 +146,7 @@ namespace DiscTools.ISO
         public void Parse(byte[] data, int cursor)
         {
             // Put the array into a memory stream and pass to the main parsing function
-            MemoryStream s = new MemoryStream(data);
+            var s = new MemoryStream(data);
             s.Seek(cursor, SeekOrigin.Begin);
             this.Parse(s);
         }
@@ -157,9 +157,9 @@ namespace DiscTools.ISO
         /// <param name="s">The stream to parse from.</param>
         public void Parse(Stream s)
         {
-            EndianBitConverter bc = EndianBitConverter.CreateForLittleEndian();
-            long startPosition = s.Position;
-            byte[] buffer = new byte[ISOFile.SECTOR_SIZE];
+            var bc = EndianBitConverter.CreateForLittleEndian();
+            var startPosition = s.Position;
+            var buffer = new byte[ISOFile.SECTOR_SIZE];
 
             // Get the length
             s.Read(buffer, 0, 1);
