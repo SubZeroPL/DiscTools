@@ -147,8 +147,7 @@ namespace DiscTools.Inspection
                     }
 
                     // get other info
-                    var newline = lbaString.Contains("\r\n") ? "\r\n" : "\n";
-                    var arr = lbaString.Split([newline], StringSplitOptions.None);
+                    var arr = lbaString.Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
                     var version = arr[1];
                     var region = arr[2];
 
