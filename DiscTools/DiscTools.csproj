@@ -6,10 +6,11 @@
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <PackageId>DiscTools</PackageId>
-        <Authors>Asnivor</Authors>
+        <Authors>Asnivor, SubZeroPL</Authors>
         <AssemblyName>DiscTools</AssemblyName>
         <RootNamespace>DiscTools</RootNamespace>
         <Copyright>Copyright © Asnivor 2017</Copyright>
         <Company>Asnivor</Company>
+        <Version>1.0.1</Version>
     </PropertyGroup>
 </Project>
